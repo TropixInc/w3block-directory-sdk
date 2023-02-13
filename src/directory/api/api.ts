@@ -8,6 +8,37 @@
  * ---------------------------------------------------------------
  */
 
+export interface CreateContextsDto {
+  /** @format uuid */
+  tenantId: string;
+
+  /** @format uuid */
+  contextId: string;
+}
+
+export interface ContextDto {
+  /** @format uuid */
+  id: string;
+
+  /** @format date-time */
+  createdAt: string;
+
+  /** @format date-time */
+  updatedAt: string;
+  description: string;
+  slug: string;
+
+  /** @format uuid */
+  tenantId?: string | null;
+}
+
+export interface UpdateContextsDto {
+  description: string;
+  slug: string;
+}
+
+export type DuplicatedContextException = object;
+
 export interface CreateDataTypesDto {
   /** @format uuid */
   tenantId: string;
@@ -53,94 +84,6 @@ export interface UpdateDataTypesDto {
   enabled?: boolean;
 }
 
-export interface CreateContextsDto {
-  description: string;
-}
-
-export interface ContextDto {
-  /** @format uuid */
-  id: string;
-
-  /** @format date-time */
-  createdAt: string;
-
-  /** @format date-time */
-  updatedAt: string;
-  description: string;
-}
-
-export interface TenantContextsDto {
-  /** @format uuid */
-  id: string;
-
-  /** @format date-time */
-  createdAt: string;
-
-  /** @format date-time */
-  updatedAt: string;
-
-  /** @format uuid */
-  tenantId: string;
-  contextId: string;
-  context: ContextDto;
-}
-
-export interface UpdateContextsDto {
-  description: string;
-}
-
-export interface CreateCustomerStatusDto {
-  /** @format uuid */
-  contextId: string;
-
-  /** @format uuid */
-  tenantId: string;
-
-  /** @format uuid */
-  customerId: string;
-
-  /** @example false */
-  verified: boolean;
-  reason?: string;
-}
-
-export interface CustomerStatusDto {
-  /** @format uuid */
-  id: string;
-
-  /** @format date-time */
-  createdAt: string;
-
-  /** @format date-time */
-  updatedAt: string;
-
-  /** @format uuid */
-  tenantId: string;
-
-  /** @format uuid */
-  customerId: string;
-
-  /** @format uuid */
-  contextId: string;
-  reason?: string | null;
-  verified: boolean;
-}
-
-export interface UpdateCustomerStatusDto {
-  /** @format uuid */
-  contextId: string;
-
-  /** @format uuid */
-  tenantId: string;
-
-  /** @format uuid */
-  customerId: string;
-
-  /** @example false */
-  verified: boolean;
-  reason?: string;
-}
-
 export interface CreateTenantParamsDto {
   /** @format uuid */
   tenantId: string;
@@ -180,21 +123,7 @@ export interface UpdateTenantParamsDto {
   enabled?: boolean;
 }
 
-export interface CreateCustomerDocumentsDto {
-  /** @format uuid */
-  tenantId: string;
-
-  /** @format uuid */
-  customerId: string;
-
-  /** @format uuid */
-  tenantParamsId: string;
-  value: string;
-  mediaType?: string;
-  signature?: string;
-}
-
-export interface CustomerDocumentsDto {
+export interface TenantContextsDto {
   /** @format uuid */
   id: string;
 
@@ -206,150 +135,67 @@ export interface CustomerDocumentsDto {
 
   /** @format uuid */
   tenantId: string;
-
-  /** @format uuid */
-  customerId: string;
-
-  /** @format uuid */
-  tenantParamsId: string;
-  value: string;
-  mediaType?: string | null;
-  signature?: string | null;
+  contextId: string;
+  context: ContextDto;
 }
 
-export interface UpdateCustomerDocumentsDto {
-  value?: string;
-  mediaType?: string;
-  signature?: string;
-}
-
-export interface CreateUploadSignatureDto {
-  /** @format uuid */
-  tenantId: string;
-
-  /** @format uuid */
-  customerId: string;
-
-  /** @format uuid */
-  tenantParamsId: string;
-}
-
-export interface GetUploadSignatureResponseDto {
-  publicId: string;
-  signature: string;
-  timestamp: number;
-  uploadPreset: string;
-}
-
-export enum I18NLocaleEnum {
-  PtBr = 'pt-br',
-  En = 'en',
-}
-
-export interface CustomerDataDto {
-  /** @format uuid */
-  tenantParamsId: string;
-  value: string;
-  signature?: string;
-}
-
-export interface CreateCustomerInfosDto {
-  /** @format uuid */
-  tenantId: string;
-
+export namespace Contexts {
   /**
-   * Password should include lowercase, uppercase and digits
-   * @example P@ssw0rd
+   * @description Create a new context
+   * @tags Contexts
+   * @name Create
+   * @request POST:/contexts
+   * @secure
    */
-  password?: string;
-
-  /** @example email@example.com */
-  email: string;
-  name: string;
-
-  /** @example pt-br */
-  i18nLocale?: I18NLocaleEnum;
-  callbackUrl?: string;
-  sendEmail?: boolean;
-  documents?: CustomerDataDto[];
-}
-
-export enum CustomerInfoStatusEnum {
-  Approved = 'approved',
-  Denied = 'denied',
-  WaitingInfo = 'waitingInfo',
-  MissingDocuments = 'missingDocuments',
-  Processing = 'processing',
-  Created = 'created',
-}
-
-export interface CustomerInfosDto {
-  /** @format uuid */
-  id: string;
-
-  /** @format date-time */
-  createdAt: string;
-
-  /** @format date-time */
-  updatedAt: string;
-
-  /** @format uuid */
-  tenantId: string;
-
-  /** @format uuid */
-  customerId: string;
-  name: string;
-  email: string;
-
-  /** @example created */
-  status: CustomerInfoStatusEnum;
-}
-
-export enum OrderByEnum {
-  ASC = 'ASC',
-  DESC = 'DESC',
-}
-
-export interface PaginationMetaDto {
-  /** @example 1 */
-  itemCount: number;
-
-  /** @example 1 */
-  totalItems?: number;
-
-  /** @example 1 */
-  itemsPerPage: number;
-
-  /** @example 1 */
-  totalPages?: number;
-
-  /** @example 1 */
-  currentPage: number;
-}
-
-export interface PaginationLinksDto {
-  /** @example http://example.com?page=1 */
-  first?: string;
-
-  /** @example http://example.com?page=1 */
-  prev?: string;
-
-  /** @example http://example.com?page=2 */
-  next?: string;
-
-  /** @example http://example.com?page=3 */
-  last?: string;
-}
-
-export interface CustomerInfosPaginated {
-  items: CustomerInfosDto[];
-  meta: PaginationMetaDto;
-  links?: PaginationLinksDto;
-}
-
-export interface ChangeCustomerInfosStatusDto {
-  /** @example created */
-  status: CustomerInfoStatusEnum;
+  export namespace Create {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = CreateContextsDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = ContextDto;
+  }
+  /**
+   * @description Returns all contexts
+   * @tags Contexts
+   * @name ListAll
+   * @request GET:/contexts
+   * @secure
+   */
+  export namespace ListAll {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ContextDto[];
+  }
+  /**
+   * @description Update a context by id
+   * @tags Contexts
+   * @name Update
+   * @request PATCH:/contexts/{id}
+   * @secure
+   */
+  export namespace Update {
+    export type RequestParams = { id: string };
+    export type RequestQuery = {};
+    export type RequestBody = UpdateContextsDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = void;
+  }
+  /**
+   * @description Delete a context by id
+   * @tags Contexts
+   * @name Delete
+   * @request DELETE:/contexts/{id}
+   * @secure
+   */
+  export namespace Delete {
+    export type RequestParams = { id: string };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = void;
+  }
 }
 
 export namespace DataTypes {
@@ -370,11 +216,11 @@ export namespace DataTypes {
   /**
    * @description Get all data types for a tenant
    * @tags Data Types
-   * @name GetDataTypes
+   * @name ListBy
    * @request GET:/data-types/{tenantId}
    * @secure
    */
-  export namespace GetDataTypes {
+  export namespace ListBy {
     export type RequestParams = { tenantId: string };
     export type RequestQuery = {};
     export type RequestBody = never;
@@ -392,6 +238,63 @@ export namespace DataTypes {
     export type RequestParams = { tenantId: string; dataTypeId: string };
     export type RequestQuery = {};
     export type RequestBody = UpdateDataTypesDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = void;
+  }
+}
+
+export namespace TenantParams {
+  /**
+   * @description Create a new tenant params
+   * @tags Tenant Params
+   * @name Create
+   * @request POST:/tenant-params
+   * @secure
+   */
+  export namespace Create {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = CreateTenantParamsDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = TenantParamsDto;
+  }
+  /**
+   * @description Get all tenant param by tenant
+   * @tags Tenant Params
+   * @name ListBy
+   * @request GET:/tenant-params/{tenantId}
+   */
+  export namespace ListBy {
+    export type RequestParams = { tenantId: string };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = TenantParamsDto[];
+  }
+  /**
+   * @description Get all tenant param by tenant and context
+   * @tags Tenant Params
+   * @name ListByContext
+   * @request GET:/tenant-params/{tenantId}/{contextId}
+   */
+  export namespace ListByContext {
+    export type RequestParams = { tenantId: string; contextId: string };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = TenantParamsDto[];
+  }
+  /**
+   * @description Updates a tenant params
+   * @tags Tenant Params
+   * @name Update
+   * @request PATCH:/tenant-params/{tenantId}/{tenantParamsId}
+   * @secure
+   */
+  export namespace Update {
+    export type RequestParams = { tenantId: string; tenantParamsId: string };
+    export type RequestQuery = {};
+    export type RequestBody = UpdateTenantParamsDto;
     export type RequestHeaders = {};
     export type ResponseBody = void;
   }
@@ -415,11 +318,11 @@ export namespace TenantContexts {
   /**
    * @description Returns all contexts for a tenant
    * @tags Tenant Contexts
-   * @name GetTenantContextsByTenant
+   * @name ListBy
    * @request GET:/tenant-contexts/{tenantId}
    * @secure
    */
-  export namespace GetTenantContextsByTenant {
+  export namespace ListBy {
     export type RequestParams = { tenantId: string };
     export type RequestQuery = {};
     export type RequestBody = never;
@@ -465,293 +368,6 @@ export namespace TenantContexts {
     export type RequestParams = { tenantId: string };
     export type RequestQuery = {};
     export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = void;
-  }
-}
-
-export namespace Contexts {
-  /**
-   * @description Create a new context
-   * @tags Contexts
-   * @name Create
-   * @request POST:/contexts
-   * @secure
-   */
-  export namespace Create {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = CreateContextsDto;
-    export type RequestHeaders = {};
-    export type ResponseBody = ContextDto;
-  }
-  /**
-   * @description Returns all contexts
-   * @tags Contexts
-   * @name GetContexts
-   * @request GET:/contexts
-   * @secure
-   */
-  export namespace GetContexts {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = ContextDto[];
-  }
-  /**
-   * @description Update a context by id
-   * @tags Contexts
-   * @name Update
-   * @request PATCH:/contexts/{id}
-   * @secure
-   */
-  export namespace Update {
-    export type RequestParams = { id: string };
-    export type RequestQuery = {};
-    export type RequestBody = UpdateContextsDto;
-    export type RequestHeaders = {};
-    export type ResponseBody = void;
-  }
-  /**
-   * @description Delete a context by id
-   * @tags Contexts
-   * @name Delete
-   * @request DELETE:/contexts/{id}
-   * @secure
-   */
-  export namespace Delete {
-    export type RequestParams = { id: string };
-    export type RequestQuery = {};
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = void;
-  }
-}
-
-export namespace CustomerStatus {
-  /**
-   * @description Create a new customer status
-   * @tags CustomerStatus
-   * @name Create
-   * @request POST:/customer-status
-   * @secure
-   */
-  export namespace Create {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = CreateCustomerStatusDto;
-    export type RequestHeaders = {};
-    export type ResponseBody = CustomerStatusDto;
-  }
-  /**
-   * @description Find customer status by context, tenant and customer
-   * @tags CustomerStatus
-   * @name FindByContextTenantAndCustomer
-   * @request GET:/customer-status/{tenantId}/{contextId}/{customerId}
-   * @secure
-   */
-  export namespace FindByContextTenantAndCustomer {
-    export type RequestParams = { tenantId: string; contextId: string; customerId: string };
-    export type RequestQuery = {};
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = CustomerStatusDto;
-  }
-  /**
-   * @description Update customer status by context, tenant and customer
-   * @tags CustomerStatus
-   * @name Update
-   * @request PATCH:/customer-status/{tenantId}/{contextId}/{customerId}
-   * @secure
-   */
-  export namespace Update {
-    export type RequestParams = { tenantId: string; contextId: string; customerId: string };
-    export type RequestQuery = {};
-    export type RequestBody = UpdateCustomerStatusDto;
-    export type RequestHeaders = {};
-    export type ResponseBody = void;
-  }
-}
-
-export namespace TenantParams {
-  /**
-   * @description Create a new tenant params
-   * @tags Tenant Params
-   * @name Create
-   * @request POST:/tenant-params
-   * @secure
-   */
-  export namespace Create {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = CreateTenantParamsDto;
-    export type RequestHeaders = {};
-    export type ResponseBody = TenantParamsDto;
-  }
-  /**
-   * @description Get all tenant param by tenant
-   * @tags Tenant Params
-   * @name GetTenantParamsByTenant
-   * @request GET:/tenant-params/{tenantId}
-   */
-  export namespace GetTenantParamsByTenant {
-    export type RequestParams = { tenantId: string };
-    export type RequestQuery = {};
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = TenantParamsDto[];
-  }
-  /**
-   * @description Get all tenant param by tenant and context
-   * @tags Tenant Params
-   * @name GetTenantParamsByTenantAndContext
-   * @request GET:/tenant-params/{tenantId}/{contextId}
-   */
-  export namespace GetTenantParamsByTenantAndContext {
-    export type RequestParams = { tenantId: string; contextId: string };
-    export type RequestQuery = {};
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = TenantParamsDto[];
-  }
-  /**
-   * @description Updates a tenant params
-   * @tags Tenant Params
-   * @name Update
-   * @request PATCH:/tenant-params/{tenantId}/{tenantParamsId}
-   * @secure
-   */
-  export namespace Update {
-    export type RequestParams = { tenantId: string; tenantParamsId: string };
-    export type RequestQuery = {};
-    export type RequestBody = UpdateTenantParamsDto;
-    export type RequestHeaders = {};
-    export type ResponseBody = void;
-  }
-}
-
-export namespace CustomerDocuments {
-  /**
-   * @description Create a new customer document
-   * @tags Customer Documents
-   * @name Create
-   * @request POST:/customer-documents
-   * @secure
-   */
-  export namespace Create {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = CreateCustomerDocumentsDto;
-    export type RequestHeaders = {};
-    export type ResponseBody = CustomerDocumentsDto;
-  }
-  /**
-   * @description Returns all customer documents by tenant and customer
-   * @tags Customer Documents
-   * @name GetCustomerDocuments
-   * @request GET:/customer-documents/{tenantId}/{customerId}
-   * @secure
-   */
-  export namespace GetCustomerDocuments {
-    export type RequestParams = { tenantId: string; customerId: string };
-    export type RequestQuery = {};
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = CustomerDocumentsDto[];
-  }
-  /**
-   * @description Updates a customer document by id
-   * @tags Customer Documents
-   * @name Update
-   * @request PUT:/customer-documents/{tenantId}/{documentId}
-   * @secure
-   */
-  export namespace Update {
-    export type RequestParams = { tenantId: string; documentId: string };
-    export type RequestQuery = {};
-    export type RequestBody = UpdateCustomerDocumentsDto;
-    export type RequestHeaders = {};
-    export type ResponseBody = void;
-  }
-  /**
-   * @description Generate a signature for upload a document
-   * @tags Customer Documents
-   * @name GetUploadSignature
-   * @request POST:/customer-documents/{tenantId}/generate-signature
-   */
-  export namespace GetUploadSignature {
-    export type RequestParams = { tenantId: string };
-    export type RequestQuery = {};
-    export type RequestBody = CreateUploadSignatureDto;
-    export type RequestHeaders = {};
-    export type ResponseBody = GetUploadSignatureResponseDto;
-  }
-}
-
-export namespace CustomerInfos {
-  /**
-   * @description Create a new customer info
-   * @tags Customer Infos
-   * @name Create
-   * @request POST:/customer-infos
-   * @secure
-   */
-  export namespace Create {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = CreateCustomerInfosDto;
-    export type RequestHeaders = {};
-    export type ResponseBody = CustomerInfosDto;
-  }
-  /**
-   * @description Returns customer info by id
-   * @tags Customer Infos
-   * @name GetCustomerInfos
-   * @request GET:/customer-infos/details/{customerId}
-   * @secure
-   */
-  export namespace GetCustomerInfos {
-    export type RequestParams = { customerId: string };
-    export type RequestQuery = {};
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = CustomerInfosDto;
-  }
-  /**
-   * @description Returns paginate list of customer infos by tenant id
-   * @tags Customer Infos
-   * @name GetAllCustomerInfos
-   * @request GET:/customer-infos/{tenantId}/search
-   * @secure
-   */
-  export namespace GetAllCustomerInfos {
-    export type RequestParams = { tenantId: string };
-    export type RequestQuery = {
-      page?: number;
-      limit?: number;
-      search?: string;
-      sortBy?: string;
-      orderBy?: OrderByEnum;
-      status?: boolean;
-      creationDate?: string;
-      creationDateEnd?: string;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = CustomerInfosPaginated;
-  }
-  /**
-   * @description Change customer info status by tenant id and customer id
-   * @tags Customer Infos
-   * @name ChangeCustomerInfoStatus
-   * @request PATCH:/customer-infos/{tenantId}/change-customer-info-status/{customerId}
-   * @secure
-   */
-  export namespace ChangeCustomerInfoStatus {
-    export type RequestParams = { tenantId: string; customerId: string };
-    export type RequestQuery = {};
-    export type RequestBody = ChangeCustomerInfosStatusDto;
     export type RequestHeaders = {};
     export type ResponseBody = void;
   }
@@ -883,6 +499,77 @@ export class HttpClient<SecurityDataType = unknown> {
  * @contact
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
+  contexts = {
+    /**
+     * @description Create a new context
+     *
+     * @tags Contexts
+     * @name Create
+     * @request POST:/contexts
+     * @secure
+     */
+    create: (data: CreateContextsDto, params: RequestParams = {}) =>
+      this.request<ContextDto, void | { statusCode: number; message: string; error?: string }>({
+        path: `/contexts`,
+        method: 'POST',
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Returns all contexts
+     *
+     * @tags Contexts
+     * @name ListAll
+     * @request GET:/contexts
+     * @secure
+     */
+    listAll: (params: RequestParams = {}) =>
+      this.request<ContextDto[], void>({
+        path: `/contexts`,
+        method: 'GET',
+        secure: true,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Update a context by id
+     *
+     * @tags Contexts
+     * @name Update
+     * @request PATCH:/contexts/{id}
+     * @secure
+     */
+    update: (id: string, data: UpdateContextsDto, params: RequestParams = {}) =>
+      this.request<void, void | DuplicatedContextException>({
+        path: `/contexts/${id}`,
+        method: 'PATCH',
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * @description Delete a context by id
+     *
+     * @tags Contexts
+     * @name Delete
+     * @request DELETE:/contexts/{id}
+     * @secure
+     */
+    delete: (id: string, params: RequestParams = {}) =>
+      this.request<void, void>({
+        path: `/contexts/${id}`,
+        method: 'DELETE',
+        secure: true,
+        ...params,
+      }),
+  };
   dataTypes = {
     /**
      * @description Create a new data type
@@ -907,11 +594,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @description Get all data types for a tenant
      *
      * @tags Data Types
-     * @name GetDataTypes
+     * @name ListBy
      * @request GET:/data-types/{tenantId}
      * @secure
      */
-    getDataTypes: (tenantId: string, params: RequestParams = {}) =>
+    listBy: (tenantId: string, params: RequestParams = {}) =>
       this.request<DataTypesDto[], void>({
         path: `/data-types/${tenantId}`,
         method: 'GET',
@@ -931,6 +618,74 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     update: (tenantId: string, dataTypeId: string, data: UpdateDataTypesDto, params: RequestParams = {}) =>
       this.request<void, void>({
         path: `/data-types/${tenantId}/${dataTypeId}`,
+        method: 'PATCH',
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        ...params,
+      }),
+  };
+  tenantParams = {
+    /**
+     * @description Create a new tenant params
+     *
+     * @tags Tenant Params
+     * @name Create
+     * @request POST:/tenant-params
+     * @secure
+     */
+    create: (data: CreateTenantParamsDto, params: RequestParams = {}) =>
+      this.request<TenantParamsDto, void>({
+        path: `/tenant-params`,
+        method: 'POST',
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get all tenant param by tenant
+     *
+     * @tags Tenant Params
+     * @name ListBy
+     * @request GET:/tenant-params/{tenantId}
+     */
+    listBy: (tenantId: string, params: RequestParams = {}) =>
+      this.request<TenantParamsDto[], any>({
+        path: `/tenant-params/${tenantId}`,
+        method: 'GET',
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get all tenant param by tenant and context
+     *
+     * @tags Tenant Params
+     * @name ListByContext
+     * @request GET:/tenant-params/{tenantId}/{contextId}
+     */
+    listByContext: (tenantId: string, contextId: string, params: RequestParams = {}) =>
+      this.request<TenantParamsDto[], any>({
+        path: `/tenant-params/${tenantId}/${contextId}`,
+        method: 'GET',
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Updates a tenant params
+     *
+     * @tags Tenant Params
+     * @name Update
+     * @request PATCH:/tenant-params/{tenantId}/{tenantParamsId}
+     * @secure
+     */
+    update: (tenantId: string, tenantParamsId: string, data: UpdateTenantParamsDto, params: RequestParams = {}) =>
+      this.request<void, void>({
+        path: `/tenant-params/${tenantId}/${tenantParamsId}`,
         method: 'PATCH',
         body: data,
         secure: true,
@@ -962,11 +717,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @description Returns all contexts for a tenant
      *
      * @tags Tenant Contexts
-     * @name GetTenantContextsByTenant
+     * @name ListBy
      * @request GET:/tenant-contexts/{tenantId}
      * @secure
      */
-    getTenantContextsByTenant: (tenantId: string, params: RequestParams = {}) =>
+    listBy: (tenantId: string, params: RequestParams = {}) =>
       this.request<TenantContextsDto[], void>({
         path: `/tenant-contexts/${tenantId}`,
         method: 'GET',
@@ -1020,374 +775,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         path: `/tenant-contexts/deactivate-signup/${tenantId}`,
         method: 'GET',
         secure: true,
-        ...params,
-      }),
-  };
-  contexts = {
-    /**
-     * @description Create a new context
-     *
-     * @tags Contexts
-     * @name Create
-     * @request POST:/contexts
-     * @secure
-     */
-    create: (data: CreateContextsDto, params: RequestParams = {}) =>
-      this.request<ContextDto, void>({
-        path: `/contexts`,
-        method: 'POST',
-        body: data,
-        secure: true,
-        type: ContentType.Json,
-        format: 'json',
-        ...params,
-      }),
-
-    /**
-     * @description Returns all contexts
-     *
-     * @tags Contexts
-     * @name GetContexts
-     * @request GET:/contexts
-     * @secure
-     */
-    getContexts: (params: RequestParams = {}) =>
-      this.request<ContextDto[], void>({
-        path: `/contexts`,
-        method: 'GET',
-        secure: true,
-        format: 'json',
-        ...params,
-      }),
-
-    /**
-     * @description Update a context by id
-     *
-     * @tags Contexts
-     * @name Update
-     * @request PATCH:/contexts/{id}
-     * @secure
-     */
-    update: (id: string, data: UpdateContextsDto, params: RequestParams = {}) =>
-      this.request<void, void>({
-        path: `/contexts/${id}`,
-        method: 'PATCH',
-        body: data,
-        secure: true,
-        type: ContentType.Json,
-        ...params,
-      }),
-
-    /**
-     * @description Delete a context by id
-     *
-     * @tags Contexts
-     * @name Delete
-     * @request DELETE:/contexts/{id}
-     * @secure
-     */
-    delete: (id: string, params: RequestParams = {}) =>
-      this.request<void, void>({
-        path: `/contexts/${id}`,
-        method: 'DELETE',
-        secure: true,
-        ...params,
-      }),
-  };
-  customerStatus = {
-    /**
-     * @description Create a new customer status
-     *
-     * @tags CustomerStatus
-     * @name Create
-     * @request POST:/customer-status
-     * @secure
-     */
-    create: (data: CreateCustomerStatusDto, params: RequestParams = {}) =>
-      this.request<CustomerStatusDto, void>({
-        path: `/customer-status`,
-        method: 'POST',
-        body: data,
-        secure: true,
-        type: ContentType.Json,
-        format: 'json',
-        ...params,
-      }),
-
-    /**
-     * @description Find customer status by context, tenant and customer
-     *
-     * @tags CustomerStatus
-     * @name FindByContextTenantAndCustomer
-     * @request GET:/customer-status/{tenantId}/{contextId}/{customerId}
-     * @secure
-     */
-    findByContextTenantAndCustomer: (
-      tenantId: string,
-      contextId: string,
-      customerId: string,
-      params: RequestParams = {},
-    ) =>
-      this.request<CustomerStatusDto, void>({
-        path: `/customer-status/${tenantId}/${contextId}/${customerId}`,
-        method: 'GET',
-        secure: true,
-        format: 'json',
-        ...params,
-      }),
-
-    /**
-     * @description Update customer status by context, tenant and customer
-     *
-     * @tags CustomerStatus
-     * @name Update
-     * @request PATCH:/customer-status/{tenantId}/{contextId}/{customerId}
-     * @secure
-     */
-    update: (
-      tenantId: string,
-      contextId: string,
-      customerId: string,
-      data: UpdateCustomerStatusDto,
-      params: RequestParams = {},
-    ) =>
-      this.request<void, void>({
-        path: `/customer-status/${tenantId}/${contextId}/${customerId}`,
-        method: 'PATCH',
-        body: data,
-        secure: true,
-        type: ContentType.Json,
-        ...params,
-      }),
-  };
-  tenantParams = {
-    /**
-     * @description Create a new tenant params
-     *
-     * @tags Tenant Params
-     * @name Create
-     * @request POST:/tenant-params
-     * @secure
-     */
-    create: (data: CreateTenantParamsDto, params: RequestParams = {}) =>
-      this.request<TenantParamsDto, void>({
-        path: `/tenant-params`,
-        method: 'POST',
-        body: data,
-        secure: true,
-        type: ContentType.Json,
-        format: 'json',
-        ...params,
-      }),
-
-    /**
-     * @description Get all tenant param by tenant
-     *
-     * @tags Tenant Params
-     * @name GetTenantParamsByTenant
-     * @request GET:/tenant-params/{tenantId}
-     */
-    getTenantParamsByTenant: (tenantId: string, params: RequestParams = {}) =>
-      this.request<TenantParamsDto[], any>({
-        path: `/tenant-params/${tenantId}`,
-        method: 'GET',
-        format: 'json',
-        ...params,
-      }),
-
-    /**
-     * @description Get all tenant param by tenant and context
-     *
-     * @tags Tenant Params
-     * @name GetTenantParamsByTenantAndContext
-     * @request GET:/tenant-params/{tenantId}/{contextId}
-     */
-    getTenantParamsByTenantAndContext: (tenantId: string, contextId: string, params: RequestParams = {}) =>
-      this.request<TenantParamsDto[], any>({
-        path: `/tenant-params/${tenantId}/${contextId}`,
-        method: 'GET',
-        format: 'json',
-        ...params,
-      }),
-
-    /**
-     * @description Updates a tenant params
-     *
-     * @tags Tenant Params
-     * @name Update
-     * @request PATCH:/tenant-params/{tenantId}/{tenantParamsId}
-     * @secure
-     */
-    update: (tenantId: string, tenantParamsId: string, data: UpdateTenantParamsDto, params: RequestParams = {}) =>
-      this.request<void, void>({
-        path: `/tenant-params/${tenantId}/${tenantParamsId}`,
-        method: 'PATCH',
-        body: data,
-        secure: true,
-        type: ContentType.Json,
-        ...params,
-      }),
-  };
-  customerDocuments = {
-    /**
-     * @description Create a new customer document
-     *
-     * @tags Customer Documents
-     * @name Create
-     * @request POST:/customer-documents
-     * @secure
-     */
-    create: (data: CreateCustomerDocumentsDto, params: RequestParams = {}) =>
-      this.request<CustomerDocumentsDto, any>({
-        path: `/customer-documents`,
-        method: 'POST',
-        body: data,
-        secure: true,
-        type: ContentType.Json,
-        format: 'json',
-        ...params,
-      }),
-
-    /**
-     * @description Returns all customer documents by tenant and customer
-     *
-     * @tags Customer Documents
-     * @name GetCustomerDocuments
-     * @request GET:/customer-documents/{tenantId}/{customerId}
-     * @secure
-     */
-    getCustomerDocuments: (tenantId: string, customerId: string, params: RequestParams = {}) =>
-      this.request<CustomerDocumentsDto[], any>({
-        path: `/customer-documents/${tenantId}/${customerId}`,
-        method: 'GET',
-        secure: true,
-        format: 'json',
-        ...params,
-      }),
-
-    /**
-     * @description Updates a customer document by id
-     *
-     * @tags Customer Documents
-     * @name Update
-     * @request PUT:/customer-documents/{tenantId}/{documentId}
-     * @secure
-     */
-    update: (tenantId: string, documentId: string, data: UpdateCustomerDocumentsDto, params: RequestParams = {}) =>
-      this.request<void, any>({
-        path: `/customer-documents/${tenantId}/${documentId}`,
-        method: 'PUT',
-        body: data,
-        secure: true,
-        type: ContentType.Json,
-        ...params,
-      }),
-
-    /**
-     * @description Generate a signature for upload a document
-     *
-     * @tags Customer Documents
-     * @name GetUploadSignature
-     * @request POST:/customer-documents/{tenantId}/generate-signature
-     */
-    getUploadSignature: (tenantId: string, data: CreateUploadSignatureDto, params: RequestParams = {}) =>
-      this.request<GetUploadSignatureResponseDto, any>({
-        path: `/customer-documents/${tenantId}/generate-signature`,
-        method: 'POST',
-        body: data,
-        type: ContentType.Json,
-        format: 'json',
-        ...params,
-      }),
-  };
-  customerInfos = {
-    /**
-     * @description Create a new customer info
-     *
-     * @tags Customer Infos
-     * @name Create
-     * @request POST:/customer-infos
-     * @secure
-     */
-    create: (data: CreateCustomerInfosDto, params: RequestParams = {}) =>
-      this.request<CustomerInfosDto, any>({
-        path: `/customer-infos`,
-        method: 'POST',
-        body: data,
-        secure: true,
-        type: ContentType.Json,
-        format: 'json',
-        ...params,
-      }),
-
-    /**
-     * @description Returns customer info by id
-     *
-     * @tags Customer Infos
-     * @name GetCustomerInfos
-     * @request GET:/customer-infos/details/{customerId}
-     * @secure
-     */
-    getCustomerInfos: (customerId: string, params: RequestParams = {}) =>
-      this.request<CustomerInfosDto, void>({
-        path: `/customer-infos/details/${customerId}`,
-        method: 'GET',
-        secure: true,
-        format: 'json',
-        ...params,
-      }),
-
-    /**
-     * @description Returns paginate list of customer infos by tenant id
-     *
-     * @tags Customer Infos
-     * @name GetAllCustomerInfos
-     * @request GET:/customer-infos/{tenantId}/search
-     * @secure
-     */
-    getAllCustomerInfos: (
-      tenantId: string,
-      query?: {
-        page?: number;
-        limit?: number;
-        search?: string;
-        sortBy?: string;
-        orderBy?: OrderByEnum;
-        status?: boolean;
-        creationDate?: string;
-        creationDateEnd?: string;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.request<CustomerInfosPaginated, void>({
-        path: `/customer-infos/${tenantId}/search`,
-        method: 'GET',
-        query: query,
-        secure: true,
-        format: 'json',
-        ...params,
-      }),
-
-    /**
-     * @description Change customer info status by tenant id and customer id
-     *
-     * @tags Customer Infos
-     * @name ChangeCustomerInfoStatus
-     * @request PATCH:/customer-infos/{tenantId}/change-customer-info-status/{customerId}
-     * @secure
-     */
-    changeCustomerInfoStatus: (
-      tenantId: string,
-      customerId: string,
-      data: ChangeCustomerInfosStatusDto,
-      params: RequestParams = {},
-    ) =>
-      this.request<void, void>({
-        path: `/customer-infos/${tenantId}/change-customer-info-status/${customerId}`,
-        method: 'PATCH',
-        body: data,
-        secure: true,
-        type: ContentType.Json,
         ...params,
       }),
   };

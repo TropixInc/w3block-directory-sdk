@@ -24,14 +24,14 @@ mock.onGet(/(\/companies)+([\w\-.\/])*(\/orders)/g, undefined, {asymmetricMatch:
 mock.onGet(/(\/companies)+([\w\-.\/])*(\/orders)/g, undefined, {asymmetricMatch: (h: any) => !!h.Authorization}).reply(200, { items: [] });
 
 const idBaseUrl = process.env.ID_API_BASE_URL || 'https://pixwayid.stg.pixway.io';
-const commerceBaseURL = process.env.COMMERCE_API_BASE_URL || 'https://commerce.pixway.io';
+const directoryBaseURL = process.env.COMMERCE_API_BASE_URL || 'https://directory.pixway.io';
 describe("SDK", () => {
   let idSdk: W3blockIdSDK;
   let sdk: W3blockDirectorySDK;
 
   beforeEach(() => {
     idSdk = new W3blockIdSDK({ baseURL: idBaseUrl, autoRefresh: false });
-    sdk = new W3blockDirectorySDK({baseURL: commerceBaseURL, idSdk})
+    sdk = new W3blockDirectorySDK({baseURL: directoryBaseURL, idSdk})
   });
 
   it("should be able to create the sdk instance", async () => {

@@ -1,6 +1,237 @@
 {
   "openapi": "3.0.0",
   "paths": {
+    "/contexts": {
+      "post": {
+        "operationId": "create",
+        "summary": "",
+        "description": "Create a new context",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateContextsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Context created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContextDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Need user with one of these roles: superAdmin"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "DuplicatedContextException": {
+                    "description": "Context slug already exists for tenant tenantId.",
+                    "value": {
+                      "statusCode": 409,
+                      "message": "Context slug already exists for tenant tenantId.",
+                      "error": "Conflict"
+                    }
+                  }
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "number",
+                      "example": 409
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Context slug already exists for tenant tenantId."
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Conflict"
+                    }
+                  },
+                  "required": [
+                    "statusCode",
+                    "message"
+                  ]
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": [
+          "Contexts"
+        ],
+        "security": [
+          {
+            "x-w3block-api-key": []
+          },
+          {
+            "x-w3block-id": []
+          },
+          {
+            "x-w3block-secret": []
+          },
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "get": {
+        "operationId": "listAll",
+        "summary": "",
+        "description": "Returns all contexts",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Returns all contexts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ContextDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Need user with one of these roles: superAdmin, admin"
+          }
+        },
+        "tags": [
+          "Contexts"
+        ],
+        "security": [
+          {
+            "x-w3block-api-key": []
+          },
+          {
+            "x-w3block-id": []
+          },
+          {
+            "x-w3block-secret": []
+          },
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/contexts/{id}": {
+      "patch": {
+        "operationId": "update",
+        "summary": "",
+        "description": "Update a context by id",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateContextsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "Need user with one of these roles: superAdmin"
+          },
+          "404": {
+            "description": "Not found context to update",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DuplicatedContextException"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Contexts"
+        ],
+        "security": [
+          {
+            "x-w3block-api-key": []
+          },
+          {
+            "x-w3block-id": []
+          },
+          {
+            "x-w3block-secret": []
+          },
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "delete",
+        "summary": "",
+        "description": "Delete a context by id",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "Need user with one of these roles: superAdmin"
+          }
+        },
+        "tags": [
+          "Contexts"
+        ],
+        "security": [
+          {
+            "x-w3block-api-key": []
+          },
+          {
+            "x-w3block-id": []
+          },
+          {
+            "x-w3block-secret": []
+          },
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
     "/data-types": {
       "post": {
         "operationId": "create",
@@ -53,7 +284,7 @@
     },
     "/data-types/{tenantId}": {
       "get": {
-        "operationId": "getDataTypes",
+        "operationId": "listBy",
         "summary": "",
         "description": "Get all data types for a tenant",
         "parameters": [
@@ -163,6 +394,194 @@
         ]
       }
     },
+    "/tenant-params": {
+      "post": {
+        "operationId": "create",
+        "summary": "",
+        "description": "Create a new tenant params",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTenantParamsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TenantParamsDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Integration API key or JWT required"
+          }
+        },
+        "tags": [
+          "Tenant Params"
+        ],
+        "security": [
+          {
+            "x-w3block-api-key": []
+          },
+          {
+            "x-w3block-id": []
+          },
+          {
+            "x-w3block-secret": []
+          },
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/tenant-params/{tenantId}": {
+      "get": {
+        "operationId": "listBy",
+        "summary": "",
+        "description": "Get all tenant param by tenant",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TenantParamsDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Tenant Params"
+        ]
+      }
+    },
+    "/tenant-params/{tenantId}/{contextId}": {
+      "get": {
+        "operationId": "listByContext",
+        "summary": "",
+        "description": "Get all tenant param by tenant and context",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "contextId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TenantParamsDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Tenant Params"
+        ]
+      }
+    },
+    "/tenant-params/{tenantId}/{tenantParamsId}": {
+      "patch": {
+        "operationId": "update",
+        "summary": "",
+        "description": "Updates a tenant params",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tenantParamsId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTenantParamsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "401": {
+            "description": "Unauthorized - Integration API key or JWT required"
+          }
+        },
+        "tags": [
+          "Tenant Params"
+        ],
+        "security": [
+          {
+            "x-w3block-api-key": []
+          },
+          {
+            "x-w3block-id": []
+          },
+          {
+            "x-w3block-secret": []
+          },
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
     "/tenant-contexts": {
       "post": {
         "operationId": "create",
@@ -215,7 +634,7 @@
     },
     "/tenant-contexts/{tenantId}": {
       "get": {
-        "operationId": "getTenantContextsByTenant",
+        "operationId": "listBy",
         "summary": "",
         "description": "Returns all contexts for a tenant",
         "parameters": [
@@ -398,969 +817,6 @@
           }
         ]
       }
-    },
-    "/contexts": {
-      "post": {
-        "operationId": "create",
-        "summary": "",
-        "description": "Create a new context",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateContextsDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContextDto"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Need user with one of these roles: superAdmin"
-          }
-        },
-        "tags": [
-          "Contexts"
-        ],
-        "security": [
-          {
-            "x-w3block-api-key": []
-          },
-          {
-            "x-w3block-id": []
-          },
-          {
-            "x-w3block-secret": []
-          },
-          {
-            "bearer": []
-          }
-        ]
-      },
-      "get": {
-        "operationId": "getContexts",
-        "summary": "",
-        "description": "Returns all contexts",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ContextDto"
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Need user with one of these roles: superAdmin, admin"
-          }
-        },
-        "tags": [
-          "Contexts"
-        ],
-        "security": [
-          {
-            "x-w3block-api-key": []
-          },
-          {
-            "x-w3block-id": []
-          },
-          {
-            "x-w3block-secret": []
-          },
-          {
-            "bearer": []
-          }
-        ]
-      }
-    },
-    "/contexts/{id}": {
-      "patch": {
-        "operationId": "update",
-        "summary": "",
-        "description": "Update a context by id",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateContextsDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "204": {
-            "description": ""
-          },
-          "401": {
-            "description": "Need user with one of these roles: superAdmin"
-          }
-        },
-        "tags": [
-          "Contexts"
-        ],
-        "security": [
-          {
-            "x-w3block-api-key": []
-          },
-          {
-            "x-w3block-id": []
-          },
-          {
-            "x-w3block-secret": []
-          },
-          {
-            "bearer": []
-          }
-        ]
-      },
-      "delete": {
-        "operationId": "delete",
-        "summary": "",
-        "description": "Delete a context by id",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": ""
-          },
-          "401": {
-            "description": "Need user with one of these roles: superAdmin"
-          }
-        },
-        "tags": [
-          "Contexts"
-        ],
-        "security": [
-          {
-            "x-w3block-api-key": []
-          },
-          {
-            "x-w3block-id": []
-          },
-          {
-            "x-w3block-secret": []
-          },
-          {
-            "bearer": []
-          }
-        ]
-      }
-    },
-    "/customer-status": {
-      "post": {
-        "operationId": "create",
-        "summary": "",
-        "description": "Create a new customer status",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateCustomerStatusDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CustomerStatusDto"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Need user with one of these roles: superAdmin, admin"
-          }
-        },
-        "tags": [
-          "CustomerStatus"
-        ],
-        "security": [
-          {
-            "x-w3block-api-key": []
-          },
-          {
-            "x-w3block-id": []
-          },
-          {
-            "x-w3block-secret": []
-          },
-          {
-            "bearer": []
-          }
-        ]
-      }
-    },
-    "/customer-status/{tenantId}/{contextId}/{customerId}": {
-      "get": {
-        "operationId": "findByContextTenantAndCustomer",
-        "summary": "",
-        "description": "Find customer status by context, tenant and customer",
-        "parameters": [
-          {
-            "name": "tenantId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "contextId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "customerId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CustomerStatusDto"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Need user with one of these roles: superAdmin, admin"
-          }
-        },
-        "tags": [
-          "CustomerStatus"
-        ],
-        "security": [
-          {
-            "x-w3block-api-key": []
-          },
-          {
-            "x-w3block-id": []
-          },
-          {
-            "x-w3block-secret": []
-          },
-          {
-            "bearer": []
-          }
-        ]
-      },
-      "patch": {
-        "operationId": "update",
-        "summary": "",
-        "description": "Update customer status by context, tenant and customer",
-        "parameters": [
-          {
-            "name": "tenantId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "contextId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "customerId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateCustomerStatusDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "204": {
-            "description": ""
-          },
-          "401": {
-            "description": "Need user with one of these roles: superAdmin, admin"
-          }
-        },
-        "tags": [
-          "CustomerStatus"
-        ],
-        "security": [
-          {
-            "x-w3block-api-key": []
-          },
-          {
-            "x-w3block-id": []
-          },
-          {
-            "x-w3block-secret": []
-          },
-          {
-            "bearer": []
-          }
-        ]
-      }
-    },
-    "/tenant-params": {
-      "post": {
-        "operationId": "create",
-        "summary": "",
-        "description": "Create a new tenant params",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateTenantParamsDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TenantParamsDto"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized - Integration API key or JWT required"
-          }
-        },
-        "tags": [
-          "Tenant Params"
-        ],
-        "security": [
-          {
-            "x-w3block-api-key": []
-          },
-          {
-            "x-w3block-id": []
-          },
-          {
-            "x-w3block-secret": []
-          },
-          {
-            "bearer": []
-          }
-        ]
-      }
-    },
-    "/tenant-params/{tenantId}": {
-      "get": {
-        "operationId": "getTenantParamsByTenant",
-        "summary": "",
-        "description": "Get all tenant param by tenant",
-        "parameters": [
-          {
-            "name": "tenantId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/TenantParamsDto"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "Tenant Params"
-        ]
-      }
-    },
-    "/tenant-params/{tenantId}/{contextId}": {
-      "get": {
-        "operationId": "getTenantParamsByTenantAndContext",
-        "summary": "",
-        "description": "Get all tenant param by tenant and context",
-        "parameters": [
-          {
-            "name": "tenantId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "contextId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/TenantParamsDto"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "Tenant Params"
-        ]
-      }
-    },
-    "/tenant-params/{tenantId}/{tenantParamsId}": {
-      "patch": {
-        "operationId": "update",
-        "summary": "",
-        "description": "Updates a tenant params",
-        "parameters": [
-          {
-            "name": "tenantId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "tenantParamsId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateTenantParamsDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": ""
-          },
-          "401": {
-            "description": "Unauthorized - Integration API key or JWT required"
-          }
-        },
-        "tags": [
-          "Tenant Params"
-        ],
-        "security": [
-          {
-            "x-w3block-api-key": []
-          },
-          {
-            "x-w3block-id": []
-          },
-          {
-            "x-w3block-secret": []
-          },
-          {
-            "bearer": []
-          }
-        ]
-      }
-    },
-    "/customer-documents": {
-      "post": {
-        "operationId": "create",
-        "summary": "",
-        "description": "Create a new customer document",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateCustomerDocumentsDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CustomerDocumentsDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "Customer Documents"
-        ],
-        "security": [
-          {
-            "bearer": []
-          }
-        ]
-      }
-    },
-    "/customer-documents/{tenantId}/{customerId}": {
-      "get": {
-        "operationId": "getCustomerDocuments",
-        "summary": "",
-        "description": "Returns all customer documents by tenant and customer",
-        "parameters": [
-          {
-            "name": "tenantId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "customerId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/CustomerDocumentsDto"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "Customer Documents"
-        ],
-        "security": [
-          {
-            "bearer": []
-          }
-        ]
-      }
-    },
-    "/customer-documents/{tenantId}/{documentId}": {
-      "put": {
-        "operationId": "update",
-        "summary": "",
-        "description": "Updates a customer document by id",
-        "parameters": [
-          {
-            "name": "tenantId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "documentId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateCustomerDocumentsDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Customer Documents"
-        ],
-        "security": [
-          {
-            "bearer": []
-          }
-        ]
-      }
-    },
-    "/customer-documents/{tenantId}/generate-signature": {
-      "post": {
-        "operationId": "getUploadSignature",
-        "summary": "",
-        "description": "Generate a signature for upload a document",
-        "parameters": [
-          {
-            "name": "tenantId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateUploadSignatureDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GetUploadSignatureResponseDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "Customer Documents"
-        ]
-      }
-    },
-    "/customer-infos": {
-      "post": {
-        "operationId": "create",
-        "summary": "",
-        "description": "Create a new customer info",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateCustomerInfosDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CustomerInfosDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "Customer Infos"
-        ],
-        "security": [
-          {
-            "bearer": []
-          }
-        ]
-      }
-    },
-    "/customer-infos/details/{customerId}": {
-      "get": {
-        "operationId": "getCustomerInfos",
-        "summary": "",
-        "description": "Returns customer info by id",
-        "parameters": [
-          {
-            "name": "customerId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CustomerInfosDto"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Need user with one of these roles: superAdmin, admin, user"
-          }
-        },
-        "tags": [
-          "Customer Infos"
-        ],
-        "security": [
-          {
-            "bearer": []
-          }
-        ]
-      }
-    },
-    "/customer-infos/{tenantId}/search": {
-      "get": {
-        "operationId": "getAllCustomerInfos",
-        "summary": "",
-        "description": "Returns paginate list of customer infos by tenant id",
-        "parameters": [
-          {
-            "name": "tenantId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "page",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "default": 1,
-              "type": "number"
-            }
-          },
-          {
-            "name": "limit",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "default": 10,
-              "type": "number"
-            }
-          },
-          {
-            "name": "search",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "sortBy",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "orderBy",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/OrderByEnum"
-            }
-          },
-          {
-            "name": "status",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "type": "boolean"
-            }
-          },
-          {
-            "name": "creationDate",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "creationDateEnd",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CustomerInfosPaginated"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Need user with one of these roles: superAdmin, admin"
-          }
-        },
-        "tags": [
-          "Customer Infos"
-        ],
-        "security": [
-          {
-            "bearer": []
-          }
-        ]
-      }
-    },
-    "/customer-infos/{tenantId}/change-customer-info-status/{customerId}": {
-      "patch": {
-        "operationId": "changeCustomerInfoStatus",
-        "summary": "",
-        "description": "Change customer info status by tenant id and customer id",
-        "parameters": [
-          {
-            "name": "tenantId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "customerId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ChangeCustomerInfosStatusDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "204": {
-            "description": ""
-          },
-          "401": {
-            "description": "Need user with one of these roles: superAdmin, admin"
-          }
-        },
-        "tags": [
-          "Customer Infos"
-        ],
-        "security": [
-          {
-            "bearer": []
-          }
-        ]
-      }
     }
   },
   "info": {
@@ -1401,6 +857,77 @@
       }
     },
     "schemas": {
+      "CreateContextsDto": {
+        "type": "object",
+        "properties": {
+          "tenantId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "contextId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "tenantId",
+          "contextId"
+        ]
+      },
+      "ContextDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "tenantId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "createdAt",
+          "updatedAt",
+          "description",
+          "slug"
+        ]
+      },
+      "UpdateContextsDto": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "description",
+          "slug"
+        ]
+      },
+      "DuplicatedContextException": {
+        "type": "object",
+        "properties": {}
+      },
       "CreateDataTypesDto": {
         "type": "object",
         "properties": {
@@ -1503,194 +1030,6 @@
           }
         }
       },
-      "CreateContextsDto": {
-        "type": "object",
-        "properties": {
-          "description": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "description"
-        ]
-      },
-      "ContextDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "createdAt": {
-            "format": "date-time",
-            "type": "string"
-          },
-          "updatedAt": {
-            "format": "date-time",
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "createdAt",
-          "updatedAt",
-          "description"
-        ]
-      },
-      "TenantContextsDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "createdAt": {
-            "format": "date-time",
-            "type": "string"
-          },
-          "updatedAt": {
-            "format": "date-time",
-            "type": "string"
-          },
-          "tenantId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "contextId": {
-            "type": "string"
-          },
-          "context": {
-            "$ref": "#/components/schemas/ContextDto"
-          }
-        },
-        "required": [
-          "id",
-          "createdAt",
-          "updatedAt",
-          "tenantId",
-          "contextId",
-          "context"
-        ]
-      },
-      "UpdateContextsDto": {
-        "type": "object",
-        "properties": {
-          "description": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "description"
-        ]
-      },
-      "CreateCustomerStatusDto": {
-        "type": "object",
-        "properties": {
-          "contextId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "tenantId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "customerId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "verified": {
-            "type": "boolean",
-            "example": false
-          },
-          "reason": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "contextId",
-          "tenantId",
-          "customerId",
-          "verified"
-        ]
-      },
-      "CustomerStatusDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "createdAt": {
-            "format": "date-time",
-            "type": "string"
-          },
-          "updatedAt": {
-            "format": "date-time",
-            "type": "string"
-          },
-          "tenantId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "customerId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "contextId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "reason": {
-            "type": "string",
-            "nullable": true
-          },
-          "verified": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "id",
-          "createdAt",
-          "updatedAt",
-          "tenantId",
-          "customerId",
-          "contextId",
-          "verified"
-        ]
-      },
-      "UpdateCustomerStatusDto": {
-        "type": "object",
-        "properties": {
-          "contextId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "tenantId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "customerId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "verified": {
-            "type": "boolean",
-            "example": false
-          },
-          "reason": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "contextId",
-          "tenantId",
-          "customerId",
-          "verified"
-        ]
-      },
       "CreateTenantParamsDto": {
         "type": "object",
         "properties": {
@@ -1791,39 +1130,7 @@
           "order"
         ]
       },
-      "CreateCustomerDocumentsDto": {
-        "type": "object",
-        "properties": {
-          "tenantId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "customerId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "tenantParamsId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "value": {
-            "type": "string"
-          },
-          "mediaType": {
-            "type": "string"
-          },
-          "signature": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "tenantId",
-          "customerId",
-          "tenantParamsId",
-          "value"
-        ]
-      },
-      "CustomerDocumentsDto": {
+      "TenantContextsDto": {
         "type": "object",
         "properties": {
           "id": {
@@ -1842,24 +1149,11 @@
             "type": "string",
             "format": "uuid"
           },
-          "customerId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "tenantParamsId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "value": {
+          "contextId": {
             "type": "string"
           },
-          "mediaType": {
-            "type": "string",
-            "nullable": true
-          },
-          "signature": {
-            "type": "string",
-            "nullable": true
+          "context": {
+            "$ref": "#/components/schemas/ContextDto"
           }
         },
         "required": [
@@ -1867,284 +1161,8 @@
           "createdAt",
           "updatedAt",
           "tenantId",
-          "customerId",
-          "tenantParamsId",
-          "value"
-        ]
-      },
-      "UpdateCustomerDocumentsDto": {
-        "type": "object",
-        "properties": {
-          "value": {
-            "type": "string"
-          },
-          "mediaType": {
-            "type": "string"
-          },
-          "signature": {
-            "type": "string"
-          }
-        }
-      },
-      "CreateUploadSignatureDto": {
-        "type": "object",
-        "properties": {
-          "tenantId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "customerId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "tenantParamsId": {
-            "type": "string",
-            "format": "uuid"
-          }
-        },
-        "required": [
-          "tenantId",
-          "customerId",
-          "tenantParamsId"
-        ]
-      },
-      "GetUploadSignatureResponseDto": {
-        "type": "object",
-        "properties": {
-          "publicId": {
-            "type": "string"
-          },
-          "signature": {
-            "type": "string"
-          },
-          "timestamp": {
-            "type": "number"
-          },
-          "uploadPreset": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "publicId",
-          "signature",
-          "timestamp",
-          "uploadPreset"
-        ]
-      },
-      "I18nLocaleEnum": {
-        "type": "string",
-        "enum": [
-          "pt-br",
-          "en"
-        ]
-      },
-      "CustomerDataDto": {
-        "type": "object",
-        "properties": {
-          "tenantParamsId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "value": {
-            "type": "string"
-          },
-          "signature": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "tenantParamsId",
-          "value"
-        ]
-      },
-      "CreateCustomerInfosDto": {
-        "type": "object",
-        "properties": {
-          "tenantId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "password": {
-            "type": "string",
-            "example": "P@ssw0rd",
-            "description": "Password should include lowercase, uppercase and digits"
-          },
-          "email": {
-            "type": "string",
-            "example": "email@example.com"
-          },
-          "name": {
-            "type": "string"
-          },
-          "i18nLocale": {
-            "example": "pt-br",
-            "$ref": "#/components/schemas/I18nLocaleEnum"
-          },
-          "callbackUrl": {
-            "type": "string"
-          },
-          "sendEmail": {
-            "type": "boolean",
-            "default": false
-          },
-          "documents": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/CustomerDataDto"
-            }
-          }
-        },
-        "required": [
-          "tenantId",
-          "email",
-          "name"
-        ]
-      },
-      "CustomerInfoStatusEnum": {
-        "type": "string",
-        "enum": [
-          "approved",
-          "denied",
-          "waitingInfo",
-          "missingDocuments",
-          "processing",
-          "created"
-        ]
-      },
-      "CustomerInfosDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "createdAt": {
-            "format": "date-time",
-            "type": "string"
-          },
-          "updatedAt": {
-            "format": "date-time",
-            "type": "string"
-          },
-          "tenantId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "customerId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          },
-          "email": {
-            "type": "string"
-          },
-          "status": {
-            "example": "created",
-            "$ref": "#/components/schemas/CustomerInfoStatusEnum"
-          }
-        },
-        "required": [
-          "id",
-          "createdAt",
-          "updatedAt",
-          "tenantId",
-          "customerId",
-          "name",
-          "email",
-          "status"
-        ]
-      },
-      "OrderByEnum": {
-        "type": "string",
-        "enum": [
-          "ASC",
-          "DESC"
-        ]
-      },
-      "PaginationMetaDto": {
-        "type": "object",
-        "properties": {
-          "itemCount": {
-            "type": "number",
-            "example": 1
-          },
-          "totalItems": {
-            "type": "number",
-            "example": 1
-          },
-          "itemsPerPage": {
-            "type": "number",
-            "example": 1
-          },
-          "totalPages": {
-            "type": "number",
-            "example": 1
-          },
-          "currentPage": {
-            "type": "number",
-            "example": 1
-          }
-        },
-        "required": [
-          "itemCount",
-          "itemsPerPage",
-          "currentPage"
-        ]
-      },
-      "PaginationLinksDto": {
-        "type": "object",
-        "properties": {
-          "first": {
-            "type": "string",
-            "example": "http://example.com?page=1"
-          },
-          "prev": {
-            "type": "string",
-            "example": "http://example.com?page=1"
-          },
-          "next": {
-            "type": "string",
-            "example": "http://example.com?page=2"
-          },
-          "last": {
-            "type": "string",
-            "example": "http://example.com?page=3"
-          }
-        }
-      },
-      "CustomerInfosPaginated": {
-        "type": "object",
-        "properties": {
-          "items": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/CustomerInfosDto"
-            }
-          },
-          "meta": {
-            "$ref": "#/components/schemas/PaginationMetaDto"
-          },
-          "links": {
-            "$ref": "#/components/schemas/PaginationLinksDto"
-          }
-        },
-        "required": [
-          "items",
-          "meta"
-        ]
-      },
-      "ChangeCustomerInfosStatusDto": {
-        "type": "object",
-        "properties": {
-          "status": {
-            "example": "created",
-            "$ref": "#/components/schemas/CustomerInfoStatusEnum"
-          }
-        },
-        "required": [
-          "status"
+          "contextId",
+          "context"
         ]
       }
     }
