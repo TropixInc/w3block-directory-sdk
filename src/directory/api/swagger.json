@@ -780,7 +780,7 @@
       "get": {
         "operationId": "deactivateSignup",
         "summary": "",
-        "description": "Desactivate signup for a tenant",
+        "description": "Deactivate signup for a tenant",
         "parameters": [
           {
             "name": "tenantId",
@@ -1105,7 +1105,6 @@
           "tenantId",
           "contextId",
           "dataTypeId",
-          "dataTypes",
           "order",
           "mandatory",
           "enabled"
@@ -1153,7 +1152,12 @@
             "type": "string"
           },
           "context": {
-            "$ref": "#/components/schemas/ContextDto"
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ContextDto"
+              }
+            ]
           }
         },
         "required": [
@@ -1161,8 +1165,7 @@
           "createdAt",
           "updatedAt",
           "tenantId",
-          "contextId",
-          "context"
+          "contextId"
         ]
       }
     }

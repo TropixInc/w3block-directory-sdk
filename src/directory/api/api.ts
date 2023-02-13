@@ -111,7 +111,7 @@ export interface TenantParamsDto {
   tenantId: string;
   contextId: string;
   dataTypeId: string;
-  dataTypes: DataTypesDto;
+  dataTypes?: DataTypesDto;
   order: number;
   mandatory: boolean;
   enabled: boolean;
@@ -136,7 +136,7 @@ export interface TenantContextsDto {
   /** @format uuid */
   tenantId: string;
   contextId: string;
-  context: ContextDto;
+  context?: ContextDto | null;
 }
 
 export namespace Contexts {
@@ -358,7 +358,7 @@ export namespace TenantContexts {
     export type ResponseBody = void;
   }
   /**
-   * @description Desactivate signup for a tenant
+   * @description Deactivate signup for a tenant
    * @tags Tenant Contexts
    * @name DeactivateSignup
    * @request GET:/tenant-contexts/deactivate-signup/{tenantId}
@@ -763,7 +763,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       }),
 
     /**
-     * @description Desactivate signup for a tenant
+     * @description Deactivate signup for a tenant
      *
      * @tags Tenant Contexts
      * @name DeactivateSignup
