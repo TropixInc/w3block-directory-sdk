@@ -11,7 +11,7 @@ Use the package in the project
 ```js
 import 'dotenv/config'
 import { W3blockIdSDK } from '@w3block/sdk-id'
-import { W3blockdirectorySDK } from '@w3block/sdk-directory'
+import { W3blockDirectorySDK } from '@w3block/sdk-directory'
 
 async function main() {
   const idSdk = new W3blockIdSDK({
@@ -24,7 +24,7 @@ async function main() {
     autoRefresh: false
   });
 
-  const sdk = new W3blockdirectorySDK({
+  const sdk = new W3blockDirectorySDK({
     idSdk: idSdk,
     baseURL: 'http://localhost:6008',
   });
