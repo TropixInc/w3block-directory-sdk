@@ -9,11 +9,9 @@
  */
 
 export interface CreateContextsDto {
-  /** @format uuid */
-  tenantId: string;
-
-  /** @format uuid */
-  contextId: string;
+  description: string;
+  slug: string;
+  tenantId?: string;
 }
 
 export interface ContextDto {
@@ -93,9 +91,9 @@ export interface CreateUserDocumentsDto {
 
   /** @format uuid */
   tenantParamsId: string;
-  value: string;
+  value?: object;
   mediaType?: string;
-  signature?: string;
+  assetId?: string;
 }
 
 export interface UserDocumentsDto {
@@ -118,13 +116,13 @@ export interface UserDocumentsDto {
   tenantParamsId: string;
   value: string;
   mediaType?: string | null;
-  signature?: string | null;
+  assetId?: string | null;
 }
 
 export interface UpdateUserDocumentsDto {
   value?: string;
   mediaType?: string;
-  signature?: string;
+  assetId: string;
 }
 
 export interface CreateUploadSignatureDto {
@@ -181,6 +179,123 @@ export interface UpdateTenantParamsDto {
   enabled?: boolean;
 }
 
+export interface CreateTenantContextDto {
+  /** @format uuid */
+  tenantId: string;
+
+  /** @format uuid */
+  contextId: string;
+  enabled?: boolean | null;
+}
+
+export interface TenantContextsDto {
+  /** @format uuid */
+  id: string;
+
+  /** @format date-time */
+  createdAt: string;
+
+  /** @format date-time */
+  updatedAt: string;
+
+  /** @format uuid */
+  tenantId: string;
+  contextId: string;
+  context?: ContextDto | null;
+  enabled: boolean;
+}
+
+export enum AssetTypeEnum {
+  Image = 'image',
+  Document = 'document',
+}
+
+export enum AssetTargetEnum {
+  UserDocument = 'userDocument',
+}
+
+export interface RequestAssetUploadDto {
+  /** @example image */
+  type: AssetTypeEnum;
+
+  /** @example userDocument */
+  target: AssetTargetEnum;
+}
+
+export interface CloudinaryProviderUploadParamsDto {
+  /** @example 000000000000 */
+  apiKey: string;
+
+  /** @example 1666215568 */
+  timestamp: number;
+
+  /** @example directory/3fa85f64-5717-4562-b3fc-2c963f66afa6 */
+  publicId: string;
+
+  /** @example bfd09f95f331f558cbd1320e67aa8d488770583e */
+  signature: string;
+
+  /** @example filename_override=false&public_id=directory/3fa85f64-5717-4562-b3fc-2c963f66afa6&timestamp=1666215568&unique_filename=true&upload_preset=upload_preset&api_key=000000000000&signature=bfd09f95f331f558cbd1320e67aa8d488770583e */
+  signedParams: string;
+
+  /** @example {"filename_override":"false","public_id":"directory/3fa85f64-5717-4562-b3fc-2c963f66afa6","timestamp":"1666215568","unique_filename":"true"} */
+  queryParams: object;
+
+  /** @example upload_preset */
+  uploadPreset: string;
+}
+
+export enum AssetType {
+  Image = 'image',
+  Document = 'document',
+}
+
+export enum AssetStatus {
+  WaitingUpload = 'waitingUpload',
+  WaitingAssociation = 'waitingAssociation',
+  Associated = 'associated',
+  Excluded = 'excluded',
+  Expired = 'expired',
+}
+
+export enum AssetProvider {
+  Cloudinary = 'cloudinary',
+}
+
+export enum AssetTarget {
+  UserDocument = 'userDocument',
+}
+
+export interface AssetEntityWithProviderUploadParamsDto {
+  /** @format uuid */
+  id: string;
+
+  /** @format date-time */
+  createdAt: string;
+
+  /** @format date-time */
+  updatedAt: string;
+
+  /** @format uuid */
+  tenantId: string;
+
+  /** @example image */
+  type: AssetType;
+
+  /** @example associated */
+  status: AssetStatus;
+
+  /** @example cloudinary */
+  provider: AssetProvider;
+
+  /** @example https://dummyimage.com/200x200/fff/000 */
+  directLink?: string | null;
+
+  /** @example userDocument */
+  target?: AssetTarget | null;
+  providerUploadParams: CloudinaryProviderUploadParamsDto;
+}
+
 export enum StatusUsersStatuses {
   Pending = 'pending',
   Approved = 'approved',
@@ -230,133 +345,6 @@ export interface UpdateUserStatusDto {
   /** @example pending */
   status: StatusUsersStatuses;
   reason?: string;
-}
-
-export enum I18NLocaleEnum {
-  PtBr = 'pt-br',
-  En = 'en',
-}
-
-export interface UserDataDto {
-  /** @format uuid */
-  tenantParamsId: string;
-  value: string;
-  signature?: string;
-}
-
-export interface CreateUserInfosDto {
-  /** @format uuid */
-  tenantId: string;
-
-  /**
-   * Password should include lowercase, uppercase and digits
-   * @example P@ssw0rd
-   */
-  password?: string;
-
-  /** @example email@example.com */
-  email: string;
-  name: string;
-
-  /** @example pt-br */
-  i18nLocale?: I18NLocaleEnum;
-  callbackUrl?: string;
-  sendEmail?: boolean;
-  documents?: UserDataDto[];
-}
-
-export enum CustomerInfoStatusEnum {
-  Approved = 'approved',
-  Denied = 'denied',
-  WaitingInfo = 'waitingInfo',
-  MissingDocuments = 'missingDocuments',
-  Processing = 'processing',
-  Created = 'created',
-}
-
-export interface CustomerInfosDto {
-  /** @format uuid */
-  id: string;
-
-  /** @format date-time */
-  createdAt: string;
-
-  /** @format date-time */
-  updatedAt: string;
-
-  /** @format uuid */
-  tenantId: string;
-
-  /** @format uuid */
-  userId: string;
-  name: string;
-  email: string;
-
-  /** @example created */
-  status: CustomerInfoStatusEnum;
-}
-
-export enum OrderByEnum {
-  ASC = 'ASC',
-  DESC = 'DESC',
-}
-
-export interface PaginationMetaDto {
-  /** @example 1 */
-  itemCount: number;
-
-  /** @example 1 */
-  totalItems?: number;
-
-  /** @example 1 */
-  itemsPerPage: number;
-
-  /** @example 1 */
-  totalPages?: number;
-
-  /** @example 1 */
-  currentPage: number;
-}
-
-export interface PaginationLinksDto {
-  /** @example http://example.com?page=1 */
-  first?: string;
-
-  /** @example http://example.com?page=1 */
-  prev?: string;
-
-  /** @example http://example.com?page=2 */
-  next?: string;
-
-  /** @example http://example.com?page=3 */
-  last?: string;
-}
-
-export interface CustomerInfosPaginated {
-  items: CustomerInfosDto[];
-  meta: PaginationMetaDto;
-  links?: PaginationLinksDto;
-}
-
-export interface ChangeUsersInfosStatusDto {
-  /** @example created */
-  status: CustomerInfoStatusEnum;
-}
-
-export interface TenantContextsDto {
-  /** @format uuid */
-  id: string;
-
-  /** @format date-time */
-  createdAt: string;
-
-  /** @format date-time */
-  updatedAt: string;
-
-  /** @format uuid */
-  tenantId: string;
-  contextId: string;
-  context?: ContextDto | null;
 }
 
 export namespace Contexts {
@@ -511,6 +499,7 @@ export namespace UsersDocuments {
    * @tags User Documents
    * @name GetSignatureToUploadDocument
    * @request POST:/users-documents/{tenantId}/generate-signature
+   * @deprecated
    */
   export namespace GetSignatureToUploadDocument {
     export type RequestParams = { tenantId: string };
@@ -563,6 +552,19 @@ export namespace TenantParams {
     export type ResponseBody = TenantParamsDto[];
   }
   /**
+   * @description Get all tenant param by tenant and context
+   * @tags Tenant Params
+   * @name ListBySlugContext
+   * @request GET:/tenant-params/{tenantId}/slug/{slug}
+   */
+  export namespace ListBySlugContext {
+    export type RequestParams = { tenantId: string; slug: string };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = TenantParamsDto[];
+  }
+  /**
    * @description Updates a tenant params
    * @tags Tenant Params
    * @name Update
@@ -575,6 +577,125 @@ export namespace TenantParams {
     export type RequestBody = UpdateTenantParamsDto;
     export type RequestHeaders = {};
     export type ResponseBody = void;
+  }
+}
+
+export namespace TenantContexts {
+  /**
+   * @description Create a new context for a tenant
+   * @tags Tenant Contexts
+   * @name Create
+   * @request POST:/tenant-contexts
+   * @secure
+   */
+  export namespace Create {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = CreateTenantContextDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = TenantContextsDto;
+  }
+  /**
+   * @description Returns all contexts for a tenant
+   * @tags Tenant Contexts
+   * @name ListBy
+   * @request GET:/tenant-contexts/{tenantId}
+   * @secure
+   */
+  export namespace ListBy {
+    export type RequestParams = { tenantId: string };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = TenantContextsDto[];
+  }
+  /**
+   * @description Delete a context by tenant and context id
+   * @tags Tenant Contexts
+   * @name Delete
+   * @request DELETE:/tenant-contexts/{tenantId}/{contextId}
+   * @secure
+   */
+  export namespace Delete {
+    export type RequestParams = { tenantId: string; contextId: string };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = void;
+  }
+  /**
+   * @description Activate a context by tenant and slug
+   * @tags Tenant Contexts
+   * @name ActivateBySlug
+   * @request PATCH:/tenant-contexts/{tenantId}/{slug}/activate
+   * @secure
+   */
+  export namespace ActivateBySlug {
+    export type RequestParams = { tenantId: string; slug: string };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = void;
+  }
+  /**
+   * @description Deactivate a context by tenant and slug
+   * @tags Tenant Contexts
+   * @name DeactivateBySlug
+   * @request PATCH:/tenant-contexts/{tenantId}/slug/{slug}/deactivate
+   * @secure
+   */
+  export namespace DeactivateBySlug {
+    export type RequestParams = { tenantId: string; slug: string };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = void;
+  }
+  /**
+   * @description Activate signup for a tenant
+   * @tags Tenant Contexts
+   * @name ActivateSignup
+   * @request GET:/tenant-contexts/activate-signup/{tenantId}
+   * @deprecated
+   * @secure
+   */
+  export namespace ActivateSignup {
+    export type RequestParams = { tenantId: string };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = void;
+  }
+  /**
+   * @description Deactivate signup for a tenant
+   * @tags Tenant Contexts
+   * @name DeactivateSignup
+   * @request GET:/tenant-contexts/deactivate-signup/{tenantId}
+   * @deprecated
+   * @secure
+   */
+  export namespace DeactivateSignup {
+    export type RequestParams = { tenantId: string };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = void;
+  }
+}
+
+export namespace Assets {
+  /**
+   * @description Creates a new request to upload some asset (image or pdf) in our service. You must use this endpoint response to upload assets using the specific provider apis (ex: Cloudinary)
+   * @tags Assets
+   * @name RequestUpload
+   * @request POST:/assets/{tenantId}
+   */
+  export namespace RequestUpload {
+    export type RequestParams = { tenantId: string };
+    export type RequestQuery = {};
+    export type RequestBody = RequestAssetUploadDto;
+    export type RequestHeaders = {};
+    export type ResponseBody = AssetEntityWithProviderUploadParamsDto;
   }
 }
 
@@ -618,147 +739,6 @@ export namespace UsersStatus {
     export type RequestParams = { tenantId: string; contextId: string; userId: string };
     export type RequestQuery = {};
     export type RequestBody = UpdateUserStatusDto;
-    export type RequestHeaders = {};
-    export type ResponseBody = void;
-  }
-}
-
-export namespace UsersInfos {
-  /**
-   * @description Create a new user info
-   * @tags Users Infos
-   * @name Create
-   * @request POST:/users-infos
-   * @secure
-   */
-  export namespace Create {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = CreateUserInfosDto;
-    export type RequestHeaders = {};
-    export type ResponseBody = CustomerInfosDto;
-  }
-  /**
-   * @description Returns user info by id
-   * @tags Users Infos
-   * @name GetCustomerInfos
-   * @request GET:/users-infos/details/{userId}
-   * @secure
-   */
-  export namespace GetCustomerInfos {
-    export type RequestParams = { userId: string };
-    export type RequestQuery = {};
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = CustomerInfosDto;
-  }
-  /**
-   * @description Returns paginate list of users infos by tenant id
-   * @tags Users Infos
-   * @name GetAllCustomerInfos
-   * @request GET:/users-infos/{tenantId}/search
-   * @secure
-   */
-  export namespace GetAllCustomerInfos {
-    export type RequestParams = { tenantId: string };
-    export type RequestQuery = {
-      page?: number;
-      limit?: number;
-      search?: string;
-      sortBy?: string;
-      orderBy?: OrderByEnum;
-      status?: boolean;
-      creationDate?: string;
-      creationDateEnd?: string;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = CustomerInfosPaginated;
-  }
-  /**
-   * @description Change user info status by tenant id and user id
-   * @tags Users Infos
-   * @name ChangeCustomerInfoStatus
-   * @request PATCH:/users-infos/{tenantId}/change-users-info-status/{userId}
-   * @secure
-   */
-  export namespace ChangeCustomerInfoStatus {
-    export type RequestParams = { tenantId: string; userId: string };
-    export type RequestQuery = {};
-    export type RequestBody = ChangeUsersInfosStatusDto;
-    export type RequestHeaders = {};
-    export type ResponseBody = void;
-  }
-}
-
-export namespace TenantContexts {
-  /**
-   * @description Create a new context for a tenant
-   * @tags Tenant Contexts
-   * @name Create
-   * @request POST:/tenant-contexts
-   * @secure
-   */
-  export namespace Create {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = CreateContextsDto;
-    export type RequestHeaders = {};
-    export type ResponseBody = TenantContextsDto;
-  }
-  /**
-   * @description Returns all contexts for a tenant
-   * @tags Tenant Contexts
-   * @name ListBy
-   * @request GET:/tenant-contexts/{tenantId}
-   * @secure
-   */
-  export namespace ListBy {
-    export type RequestParams = { tenantId: string };
-    export type RequestQuery = {};
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = TenantContextsDto[];
-  }
-  /**
-   * @description Delete a context by tenant and context id
-   * @tags Tenant Contexts
-   * @name Delete
-   * @request DELETE:/tenant-contexts/{tenantId}/{contextId}
-   * @secure
-   */
-  export namespace Delete {
-    export type RequestParams = { tenantId: string; contextId: string };
-    export type RequestQuery = {};
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = void;
-  }
-  /**
-   * @description Activate signup for a tenant
-   * @tags Tenant Contexts
-   * @name ActivateSignup
-   * @request GET:/tenant-contexts/activate-signup/{tenantId}
-   * @secure
-   */
-  export namespace ActivateSignup {
-    export type RequestParams = { tenantId: string };
-    export type RequestQuery = {};
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = void;
-  }
-  /**
-   * @description Deactivate signup for a tenant
-   * @tags Tenant Contexts
-   * @name DeactivateSignup
-   * @request GET:/tenant-contexts/deactivate-signup/{tenantId}
-   * @secure
-   */
-  export namespace DeactivateSignup {
-    export type RequestParams = { tenantId: string };
-    export type RequestQuery = {};
-    export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = void;
   }
@@ -1077,6 +1057,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags User Documents
      * @name GetSignatureToUploadDocument
      * @request POST:/users-documents/{tenantId}/generate-signature
+     * @deprecated
      */
     getSignatureToUploadDocument: (tenantId: string, data: CreateUploadSignatureDto, params: RequestParams = {}) =>
       this.request<GetUploadSignatureResponseDto, any>({
@@ -1098,7 +1079,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @secure
      */
     create: (data: CreateTenantParamsDto, params: RequestParams = {}) =>
-      this.request<TenantParamsDto, void>({
+      this.request<TenantParamsDto, void | { statusCode: number; message: string; error?: string }>({
         path: `/tenant-params`,
         method: 'POST',
         body: data,
@@ -1139,6 +1120,21 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       }),
 
     /**
+     * @description Get all tenant param by tenant and context
+     *
+     * @tags Tenant Params
+     * @name ListBySlugContext
+     * @request GET:/tenant-params/{tenantId}/slug/{slug}
+     */
+    listBySlugContext: (tenantId: string, slug: string, params: RequestParams = {}) =>
+      this.request<TenantParamsDto[], { statusCode: number; message: string; error?: string }>({
+        path: `/tenant-params/${tenantId}/slug/${slug}`,
+        method: 'GET',
+        format: 'json',
+        ...params,
+      }),
+
+    /**
      * @description Updates a tenant params
      *
      * @tags Tenant Params
@@ -1153,6 +1149,143 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         body: data,
         secure: true,
         type: ContentType.Json,
+        ...params,
+      }),
+  };
+  tenantContexts = {
+    /**
+     * @description Create a new context for a tenant
+     *
+     * @tags Tenant Contexts
+     * @name Create
+     * @request POST:/tenant-contexts
+     * @secure
+     */
+    create: (data: CreateTenantContextDto, params: RequestParams = {}) =>
+      this.request<TenantContextsDto, void | { statusCode: number; message: string; error?: string }>({
+        path: `/tenant-contexts`,
+        method: 'POST',
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Returns all contexts for a tenant
+     *
+     * @tags Tenant Contexts
+     * @name ListBy
+     * @request GET:/tenant-contexts/{tenantId}
+     * @secure
+     */
+    listBy: (tenantId: string, params: RequestParams = {}) =>
+      this.request<TenantContextsDto[], void>({
+        path: `/tenant-contexts/${tenantId}`,
+        method: 'GET',
+        secure: true,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Delete a context by tenant and context id
+     *
+     * @tags Tenant Contexts
+     * @name Delete
+     * @request DELETE:/tenant-contexts/{tenantId}/{contextId}
+     * @secure
+     */
+    delete: (tenantId: string, contextId: string, params: RequestParams = {}) =>
+      this.request<void, void | { statusCode: number; message: string; error?: string }>({
+        path: `/tenant-contexts/${tenantId}/${contextId}`,
+        method: 'DELETE',
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Activate a context by tenant and slug
+     *
+     * @tags Tenant Contexts
+     * @name ActivateBySlug
+     * @request PATCH:/tenant-contexts/{tenantId}/{slug}/activate
+     * @secure
+     */
+    activateBySlug: (tenantId: string, slug: string, params: RequestParams = {}) =>
+      this.request<void, void | { statusCode: number; message: string; error?: string }>({
+        path: `/tenant-contexts/${tenantId}/${slug}/activate`,
+        method: 'PATCH',
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Deactivate a context by tenant and slug
+     *
+     * @tags Tenant Contexts
+     * @name DeactivateBySlug
+     * @request PATCH:/tenant-contexts/{tenantId}/slug/{slug}/deactivate
+     * @secure
+     */
+    deactivateBySlug: (tenantId: string, slug: string, params: RequestParams = {}) =>
+      this.request<void, void | { statusCode: number; message: string; error?: string }>({
+        path: `/tenant-contexts/${tenantId}/slug/${slug}/deactivate`,
+        method: 'PATCH',
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Activate signup for a tenant
+     *
+     * @tags Tenant Contexts
+     * @name ActivateSignup
+     * @request GET:/tenant-contexts/activate-signup/{tenantId}
+     * @deprecated
+     * @secure
+     */
+    activateSignup: (tenantId: string, params: RequestParams = {}) =>
+      this.request<void, void | { statusCode: number; message: string; error?: string }>({
+        path: `/tenant-contexts/activate-signup/${tenantId}`,
+        method: 'GET',
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Deactivate signup for a tenant
+     *
+     * @tags Tenant Contexts
+     * @name DeactivateSignup
+     * @request GET:/tenant-contexts/deactivate-signup/{tenantId}
+     * @deprecated
+     * @secure
+     */
+    deactivateSignup: (tenantId: string, params: RequestParams = {}) =>
+      this.request<void, void | { statusCode: number; message: string; error?: string }>({
+        path: `/tenant-contexts/deactivate-signup/${tenantId}`,
+        method: 'GET',
+        secure: true,
+        ...params,
+      }),
+  };
+  assets = {
+    /**
+     * @description Creates a new request to upload some asset (image or pdf) in our service. You must use this endpoint response to upload assets using the specific provider apis (ex: Cloudinary)
+     *
+     * @tags Assets
+     * @name RequestUpload
+     * @request POST:/assets/{tenantId}
+     */
+    requestUpload: (tenantId: string, data: RequestAssetUploadDto, params: RequestParams = {}) =>
+      this.request<AssetEntityWithProviderUploadParamsDto, any>({
+        path: `/assets/${tenantId}`,
+        method: 'POST',
+        body: data,
+        type: ContentType.Json,
+        format: 'json',
         ...params,
       }),
   };
@@ -1214,182 +1347,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         body: data,
         secure: true,
         type: ContentType.Json,
-        ...params,
-      }),
-  };
-  usersInfos = {
-    /**
-     * @description Create a new user info
-     *
-     * @tags Users Infos
-     * @name Create
-     * @request POST:/users-infos
-     * @secure
-     */
-    create: (data: CreateUserInfosDto, params: RequestParams = {}) =>
-      this.request<CustomerInfosDto, any>({
-        path: `/users-infos`,
-        method: 'POST',
-        body: data,
-        secure: true,
-        type: ContentType.Json,
-        format: 'json',
-        ...params,
-      }),
-
-    /**
-     * @description Returns user info by id
-     *
-     * @tags Users Infos
-     * @name GetCustomerInfos
-     * @request GET:/users-infos/details/{userId}
-     * @secure
-     */
-    getCustomerInfos: (userId: string, params: RequestParams = {}) =>
-      this.request<CustomerInfosDto, void>({
-        path: `/users-infos/details/${userId}`,
-        method: 'GET',
-        secure: true,
-        format: 'json',
-        ...params,
-      }),
-
-    /**
-     * @description Returns paginate list of users infos by tenant id
-     *
-     * @tags Users Infos
-     * @name GetAllCustomerInfos
-     * @request GET:/users-infos/{tenantId}/search
-     * @secure
-     */
-    getAllCustomerInfos: (
-      tenantId: string,
-      query?: {
-        page?: number;
-        limit?: number;
-        search?: string;
-        sortBy?: string;
-        orderBy?: OrderByEnum;
-        status?: boolean;
-        creationDate?: string;
-        creationDateEnd?: string;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.request<CustomerInfosPaginated, void>({
-        path: `/users-infos/${tenantId}/search`,
-        method: 'GET',
-        query: query,
-        secure: true,
-        format: 'json',
-        ...params,
-      }),
-
-    /**
-     * @description Change user info status by tenant id and user id
-     *
-     * @tags Users Infos
-     * @name ChangeCustomerInfoStatus
-     * @request PATCH:/users-infos/{tenantId}/change-users-info-status/{userId}
-     * @secure
-     */
-    changeCustomerInfoStatus: (
-      tenantId: string,
-      userId: string,
-      data: ChangeUsersInfosStatusDto,
-      params: RequestParams = {},
-    ) =>
-      this.request<void, void>({
-        path: `/users-infos/${tenantId}/change-users-info-status/${userId}`,
-        method: 'PATCH',
-        body: data,
-        secure: true,
-        type: ContentType.Json,
-        ...params,
-      }),
-  };
-  tenantContexts = {
-    /**
-     * @description Create a new context for a tenant
-     *
-     * @tags Tenant Contexts
-     * @name Create
-     * @request POST:/tenant-contexts
-     * @secure
-     */
-    create: (data: CreateContextsDto, params: RequestParams = {}) =>
-      this.request<TenantContextsDto, void>({
-        path: `/tenant-contexts`,
-        method: 'POST',
-        body: data,
-        secure: true,
-        type: ContentType.Json,
-        format: 'json',
-        ...params,
-      }),
-
-    /**
-     * @description Returns all contexts for a tenant
-     *
-     * @tags Tenant Contexts
-     * @name ListBy
-     * @request GET:/tenant-contexts/{tenantId}
-     * @secure
-     */
-    listBy: (tenantId: string, params: RequestParams = {}) =>
-      this.request<TenantContextsDto[], void>({
-        path: `/tenant-contexts/${tenantId}`,
-        method: 'GET',
-        secure: true,
-        format: 'json',
-        ...params,
-      }),
-
-    /**
-     * @description Delete a context by tenant and context id
-     *
-     * @tags Tenant Contexts
-     * @name Delete
-     * @request DELETE:/tenant-contexts/{tenantId}/{contextId}
-     * @secure
-     */
-    delete: (tenantId: string, contextId: string, params: RequestParams = {}) =>
-      this.request<void, void>({
-        path: `/tenant-contexts/${tenantId}/${contextId}`,
-        method: 'DELETE',
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * @description Activate signup for a tenant
-     *
-     * @tags Tenant Contexts
-     * @name ActivateSignup
-     * @request GET:/tenant-contexts/activate-signup/{tenantId}
-     * @secure
-     */
-    activateSignup: (tenantId: string, params: RequestParams = {}) =>
-      this.request<void, void>({
-        path: `/tenant-contexts/activate-signup/${tenantId}`,
-        method: 'GET',
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * @description Deactivate signup for a tenant
-     *
-     * @tags Tenant Contexts
-     * @name DeactivateSignup
-     * @request GET:/tenant-contexts/deactivate-signup/{tenantId}
-     * @secure
-     */
-    deactivateSignup: (tenantId: string, params: RequestParams = {}) =>
-      this.request<void, void>({
-        path: `/tenant-contexts/deactivate-signup/${tenantId}`,
-        method: 'GET',
-        secure: true,
         ...params,
       }),
   };

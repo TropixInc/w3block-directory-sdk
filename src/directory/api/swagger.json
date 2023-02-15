@@ -36,10 +36,10 @@
               "application/json": {
                 "examples": {
                   "DuplicatedContextException": {
-                    "description": "Context slug already exists for tenant tenantId.",
+                    "description": "Context \"slug\" already exists for tenant \"tenantId\".",
                     "value": {
                       "statusCode": 409,
-                      "message": "Context slug already exists for tenant tenantId.",
+                      "message": "Context \"slug\" already exists for tenant \"tenantId\".",
                       "error": "Conflict"
                     }
                   }
@@ -53,7 +53,7 @@
                     },
                     "message": {
                       "type": "string",
-                      "example": "Context slug already exists for tenant tenantId."
+                      "example": "Context \"slug\" already exists for tenant \"tenantId\"."
                     },
                     "error": {
                       "type": "string",
@@ -533,6 +533,7 @@
         "operationId": "getSignatureToUploadDocument",
         "summary": "",
         "description": "Generate a signature for upload a document",
+        "deprecated": true,
         "parameters": [
           {
             "name": "tenantId",
@@ -599,6 +600,44 @@
           },
           "401": {
             "description": "Unauthorized - Integration API key or JWT required"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "TenantParamsAlreadyRegisteredException": {
+                    "description": "Tenant Params already registered: dataTypeId: \"dataTypeId\", contextId: \"contextId\", tenantId: \"tenantId\"",
+                    "value": {
+                      "statusCode": 409,
+                      "message": "Tenant Params already registered: dataTypeId: \"dataTypeId\", contextId: \"contextId\", tenantId: \"tenantId\"",
+                      "error": "Conflict"
+                    }
+                  }
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "number",
+                      "example": 409
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Tenant Params already registered: dataTypeId: \"dataTypeId\", contextId: \"contextId\", tenantId: \"tenantId\""
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Conflict"
+                    }
+                  },
+                  "required": [
+                    "statusCode",
+                    "message"
+                  ]
+                }
+              }
+            },
+            "description": ""
           }
         },
         "tags": [
@@ -698,6 +737,103 @@
         ]
       }
     },
+    "/tenant-params/{tenantId}/slug/{slug}": {
+      "get": {
+        "operationId": "listBySlugContext",
+        "summary": "",
+        "description": "Get all tenant param by tenant and context",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "slug",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TenantParamsDto"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "TenantContextDisabledException": {
+                    "description": "Tenant context \"slug\" is disabled from \"tenant\"",
+                    "value": {
+                      "statusCode": 404,
+                      "message": "Tenant context \"slug\" is disabled from \"tenant\"",
+                      "error": "Not Found"
+                    }
+                  },
+                  "ContextBySlugNotFoundException": {
+                    "description": "Context slug not exist from tenant or global.",
+                    "value": {
+                      "statusCode": 404,
+                      "message": "Context slug not exist from tenant or global.",
+                      "error": "Not Found"
+                    }
+                  },
+                  "TenantContextNotFoundException": {
+                    "description": "Tenant context \"slug\" not found from \"tenant\"",
+                    "value": {
+                      "statusCode": 404,
+                      "message": "Tenant context \"slug\" not found from \"tenant\"",
+                      "error": "Not Found"
+                    }
+                  }
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "number",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Tenant context \"slug\" is disabled from \"tenant\""
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Not Found"
+                    }
+                  },
+                  "required": [
+                    "statusCode",
+                    "message"
+                  ]
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": [
+          "Tenant Params"
+        ]
+      }
+    },
     "/tenant-params/{tenantId}/{tenantParamsId}": {
       "patch": {
         "operationId": "update",
@@ -755,6 +891,630 @@
           {
             "bearer": []
           }
+        ]
+      }
+    },
+    "/tenant-contexts": {
+      "post": {
+        "operationId": "create",
+        "summary": "",
+        "description": "Create a new context for a tenant",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTenantContextDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TenantContextsDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Need user with one of these roles: superAdmin, admin"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "ContextNotFoundException": {
+                    "description": "Context \"contextId\" not found.",
+                    "value": {
+                      "statusCode": 404,
+                      "message": "Context \"contextId\" not found.",
+                      "error": "Not Found"
+                    }
+                  }
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "number",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Context \"contextId\" not found."
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Not Found"
+                    }
+                  },
+                  "required": [
+                    "statusCode",
+                    "message"
+                  ]
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": [
+          "Tenant Contexts"
+        ],
+        "security": [
+          {
+            "x-w3block-api-key": []
+          },
+          {
+            "x-w3block-id": []
+          },
+          {
+            "x-w3block-secret": []
+          },
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/tenant-contexts/{tenantId}": {
+      "get": {
+        "operationId": "listBy",
+        "summary": "",
+        "description": "Returns all contexts for a tenant",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TenantContextsDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Need user with one of these roles: superAdmin, admin"
+          }
+        },
+        "tags": [
+          "Tenant Contexts"
+        ],
+        "security": [
+          {
+            "x-w3block-api-key": []
+          },
+          {
+            "x-w3block-id": []
+          },
+          {
+            "x-w3block-secret": []
+          },
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/tenant-contexts/{tenantId}/{contextId}": {
+      "delete": {
+        "operationId": "delete",
+        "summary": "",
+        "description": "Delete a context by tenant and context id",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "contextId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "Need user with one of these roles: superAdmin, admin"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "TenantContextNotFoundException": {
+                    "description": "Tenant context \"contextId\" not found from \"tenantId\"",
+                    "value": {
+                      "statusCode": 404,
+                      "message": "Tenant context \"contextId\" not found from \"tenantId\"",
+                      "error": "Not Found"
+                    }
+                  }
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "number",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Tenant context \"contextId\" not found from \"tenantId\""
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Not Found"
+                    }
+                  },
+                  "required": [
+                    "statusCode",
+                    "message"
+                  ]
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": [
+          "Tenant Contexts"
+        ],
+        "security": [
+          {
+            "x-w3block-api-key": []
+          },
+          {
+            "x-w3block-id": []
+          },
+          {
+            "x-w3block-secret": []
+          },
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/tenant-contexts/{tenantId}/{slug}/activate": {
+      "patch": {
+        "operationId": "activateBySlug",
+        "summary": "",
+        "description": "Activate a context by tenant and slug",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "slug",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "Need user with one of these roles: superAdmin, admin"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "ContextBySlugNotFoundException": {
+                    "description": "Context slug not exist from tenantId or global.",
+                    "value": {
+                      "statusCode": 404,
+                      "message": "Context slug not exist from tenantId or global.",
+                      "error": "Not Found"
+                    }
+                  }
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "number",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Context slug not exist from tenantId or global."
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Not Found"
+                    }
+                  },
+                  "required": [
+                    "statusCode",
+                    "message"
+                  ]
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": [
+          "Tenant Contexts"
+        ],
+        "security": [
+          {
+            "x-w3block-api-key": []
+          },
+          {
+            "x-w3block-id": []
+          },
+          {
+            "x-w3block-secret": []
+          },
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/tenant-contexts/{tenantId}/slug/{slug}/deactivate": {
+      "patch": {
+        "operationId": "deactivateBySlug",
+        "summary": "",
+        "description": "Deactivate a context by tenant and slug",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "slug",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "Need user with one of these roles: superAdmin, admin"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "ContextBySlugNotFoundException": {
+                    "description": "Context slug not exist from tenantId or global.",
+                    "value": {
+                      "statusCode": 404,
+                      "message": "Context slug not exist from tenantId or global.",
+                      "error": "Not Found"
+                    }
+                  },
+                  "TenantContextBySlugAndTenantNotFoundException": {
+                    "description": "Tenant context \"slug\" not exist from \"tenantId\"",
+                    "value": {
+                      "statusCode": 404,
+                      "message": "Tenant context \"slug\" not exist from \"tenantId\"",
+                      "error": "Not Found"
+                    }
+                  }
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "number",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Context slug not exist from tenantId or global."
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Not Found"
+                    }
+                  },
+                  "required": [
+                    "statusCode",
+                    "message"
+                  ]
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": [
+          "Tenant Contexts"
+        ],
+        "security": [
+          {
+            "x-w3block-api-key": []
+          },
+          {
+            "x-w3block-id": []
+          },
+          {
+            "x-w3block-secret": []
+          },
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/tenant-contexts/activate-signup/{tenantId}": {
+      "get": {
+        "operationId": "activateSignup",
+        "summary": "",
+        "description": "Activate signup for a tenant",
+        "deprecated": true,
+        "parameters": [
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "Need user with one of these roles: superAdmin, admin"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "ContextBySlugNotFoundException": {
+                    "description": "Context slug not exist from tenantId or global.",
+                    "value": {
+                      "statusCode": 404,
+                      "message": "Context slug not exist from tenantId or global.",
+                      "error": "Not Found"
+                    }
+                  }
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "number",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Context slug not exist from tenantId or global."
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Not Found"
+                    }
+                  },
+                  "required": [
+                    "statusCode",
+                    "message"
+                  ]
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": [
+          "Tenant Contexts"
+        ],
+        "security": [
+          {
+            "x-w3block-api-key": []
+          },
+          {
+            "x-w3block-id": []
+          },
+          {
+            "x-w3block-secret": []
+          },
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/tenant-contexts/deactivate-signup/{tenantId}": {
+      "get": {
+        "operationId": "deactivateSignup",
+        "summary": "",
+        "description": "Deactivate signup for a tenant",
+        "deprecated": true,
+        "parameters": [
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "Need user with one of these roles: superAdmin, admin"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "ContextBySlugNotFoundException": {
+                    "description": "Context slug not exist from tenantId or global.",
+                    "value": {
+                      "statusCode": 404,
+                      "message": "Context slug not exist from tenantId or global.",
+                      "error": "Not Found"
+                    }
+                  },
+                  "TenantContextBySlugAndTenantNotFoundException": {
+                    "description": "Tenant context \"slug\" not exist from \"tenantId\"",
+                    "value": {
+                      "statusCode": 404,
+                      "message": "Tenant context \"slug\" not exist from \"tenantId\"",
+                      "error": "Not Found"
+                    }
+                  }
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "number",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Context slug not exist from tenantId or global."
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Not Found"
+                    }
+                  },
+                  "required": [
+                    "statusCode",
+                    "message"
+                  ]
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": [
+          "Tenant Contexts"
+        ],
+        "security": [
+          {
+            "x-w3block-api-key": []
+          },
+          {
+            "x-w3block-id": []
+          },
+          {
+            "x-w3block-secret": []
+          },
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/assets/{tenantId}": {
+      "post": {
+        "operationId": "requestUpload",
+        "summary": "",
+        "description": "Creates a new request to upload some asset (image or pdf) in our service. You must use this endpoint response to upload assets using the specific provider apis (ex: Cloudinary)",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestAssetUploadDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Asset upload request successfully created!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetEntityWithProviderUploadParamsDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Assets"
         ]
       }
     },
@@ -938,477 +1698,6 @@
           }
         ]
       }
-    },
-    "/users-infos": {
-      "post": {
-        "operationId": "create",
-        "summary": "",
-        "description": "Create a new user info",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateUserInfosDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CustomerInfosDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "Users Infos"
-        ],
-        "security": [
-          {
-            "bearer": []
-          }
-        ]
-      }
-    },
-    "/users-infos/details/{userId}": {
-      "get": {
-        "operationId": "getCustomerInfos",
-        "summary": "",
-        "description": "Returns user info by id",
-        "parameters": [
-          {
-            "name": "userId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CustomerInfosDto"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Need user with one of these roles: superAdmin, admin, user"
-          }
-        },
-        "tags": [
-          "Users Infos"
-        ],
-        "security": [
-          {
-            "bearer": []
-          }
-        ]
-      }
-    },
-    "/users-infos/{tenantId}/search": {
-      "get": {
-        "operationId": "getAllCustomerInfos",
-        "summary": "",
-        "description": "Returns paginate list of users infos by tenant id",
-        "parameters": [
-          {
-            "name": "tenantId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "page",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "default": 1,
-              "type": "number"
-            }
-          },
-          {
-            "name": "limit",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "default": 10,
-              "type": "number"
-            }
-          },
-          {
-            "name": "search",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "sortBy",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "orderBy",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/OrderByEnum"
-            }
-          },
-          {
-            "name": "status",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "type": "boolean"
-            }
-          },
-          {
-            "name": "creationDate",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "creationDateEnd",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CustomerInfosPaginated"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Need user with one of these roles: superAdmin, admin"
-          }
-        },
-        "tags": [
-          "Users Infos"
-        ],
-        "security": [
-          {
-            "bearer": []
-          }
-        ]
-      }
-    },
-    "/users-infos/{tenantId}/change-users-info-status/{userId}": {
-      "patch": {
-        "operationId": "changeCustomerInfoStatus",
-        "summary": "",
-        "description": "Change user info status by tenant id and user id",
-        "parameters": [
-          {
-            "name": "tenantId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "userId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ChangeUsersInfosStatusDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "204": {
-            "description": ""
-          },
-          "401": {
-            "description": "Need user with one of these roles: superAdmin, admin"
-          }
-        },
-        "tags": [
-          "Users Infos"
-        ],
-        "security": [
-          {
-            "bearer": []
-          }
-        ]
-      }
-    },
-    "/tenant-contexts": {
-      "post": {
-        "operationId": "create",
-        "summary": "",
-        "description": "Create a new context for a tenant",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateContextsDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TenantContextsDto"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Need user with one of these roles: superAdmin, admin"
-          }
-        },
-        "tags": [
-          "Tenant Contexts"
-        ],
-        "security": [
-          {
-            "x-w3block-api-key": []
-          },
-          {
-            "x-w3block-id": []
-          },
-          {
-            "x-w3block-secret": []
-          },
-          {
-            "bearer": []
-          }
-        ]
-      }
-    },
-    "/tenant-contexts/{tenantId}": {
-      "get": {
-        "operationId": "listBy",
-        "summary": "",
-        "description": "Returns all contexts for a tenant",
-        "parameters": [
-          {
-            "name": "tenantId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/TenantContextsDto"
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Need user with one of these roles: superAdmin, admin"
-          }
-        },
-        "tags": [
-          "Tenant Contexts"
-        ],
-        "security": [
-          {
-            "x-w3block-api-key": []
-          },
-          {
-            "x-w3block-id": []
-          },
-          {
-            "x-w3block-secret": []
-          },
-          {
-            "bearer": []
-          }
-        ]
-      }
-    },
-    "/tenant-contexts/{tenantId}/{contextId}": {
-      "delete": {
-        "operationId": "delete",
-        "summary": "",
-        "description": "Delete a context by tenant and context id",
-        "parameters": [
-          {
-            "name": "tenantId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "contextId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": ""
-          },
-          "401": {
-            "description": "Need user with one of these roles: superAdmin, admin"
-          }
-        },
-        "tags": [
-          "Tenant Contexts"
-        ],
-        "security": [
-          {
-            "x-w3block-api-key": []
-          },
-          {
-            "x-w3block-id": []
-          },
-          {
-            "x-w3block-secret": []
-          },
-          {
-            "bearer": []
-          }
-        ]
-      }
-    },
-    "/tenant-contexts/activate-signup/{tenantId}": {
-      "get": {
-        "operationId": "activateSignup",
-        "summary": "",
-        "description": "Activate signup for a tenant",
-        "parameters": [
-          {
-            "name": "tenantId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": ""
-          },
-          "401": {
-            "description": "Need user with one of these roles: superAdmin, admin"
-          }
-        },
-        "tags": [
-          "Tenant Contexts"
-        ],
-        "security": [
-          {
-            "x-w3block-api-key": []
-          },
-          {
-            "x-w3block-id": []
-          },
-          {
-            "x-w3block-secret": []
-          },
-          {
-            "bearer": []
-          }
-        ]
-      }
-    },
-    "/tenant-contexts/deactivate-signup/{tenantId}": {
-      "get": {
-        "operationId": "deactivateSignup",
-        "summary": "",
-        "description": "Deactivate signup for a tenant",
-        "parameters": [
-          {
-            "name": "tenantId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": ""
-          },
-          "401": {
-            "description": "Need user with one of these roles: superAdmin, admin"
-          }
-        },
-        "tags": [
-          "Tenant Contexts"
-        ],
-        "security": [
-          {
-            "x-w3block-api-key": []
-          },
-          {
-            "x-w3block-id": []
-          },
-          {
-            "x-w3block-secret": []
-          },
-          {
-            "bearer": []
-          }
-        ]
-      }
     }
   },
   "info": {
@@ -1452,18 +1741,19 @@
       "CreateContextsDto": {
         "type": "object",
         "properties": {
-          "tenantId": {
-            "type": "string",
-            "format": "uuid"
+          "description": {
+            "type": "string"
           },
-          "contextId": {
-            "type": "string",
-            "format": "uuid"
+          "slug": {
+            "type": "string"
+          },
+          "tenantId": {
+            "type": "string"
           }
         },
         "required": [
-          "tenantId",
-          "contextId"
+          "description",
+          "slug"
         ]
       },
       "ContextDto": {
@@ -1638,20 +1928,19 @@
             "format": "uuid"
           },
           "value": {
-            "type": "string"
+            "type": "object"
           },
           "mediaType": {
             "type": "string"
           },
-          "signature": {
+          "assetId": {
             "type": "string"
           }
         },
         "required": [
           "tenantId",
           "userId",
-          "tenantParamsId",
-          "value"
+          "tenantParamsId"
         ]
       },
       "UserDocumentsDto": {
@@ -1688,7 +1977,7 @@
             "type": "string",
             "nullable": true
           },
-          "signature": {
+          "assetId": {
             "type": "string",
             "nullable": true
           }
@@ -1712,10 +2001,13 @@
           "mediaType": {
             "type": "string"
           },
-          "signature": {
+          "assetId": {
             "type": "string"
           }
-        }
+        },
+        "required": [
+          "assetId"
+        ]
       },
       "CreateUploadSignatureDto": {
         "type": "object",
@@ -1856,6 +2148,234 @@
           "order"
         ]
       },
+      "CreateTenantContextDto": {
+        "type": "object",
+        "properties": {
+          "tenantId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "contextId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "enabled": {
+            "type": "boolean",
+            "default": true,
+            "nullable": true
+          }
+        },
+        "required": [
+          "tenantId",
+          "contextId"
+        ]
+      },
+      "TenantContextsDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "tenantId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "contextId": {
+            "type": "string"
+          },
+          "context": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ContextDto"
+              }
+            ]
+          },
+          "enabled": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "createdAt",
+          "updatedAt",
+          "tenantId",
+          "contextId",
+          "enabled"
+        ]
+      },
+      "AssetTypeEnum": {
+        "type": "string",
+        "enum": [
+          "image",
+          "document"
+        ]
+      },
+      "AssetTargetEnum": {
+        "type": "string",
+        "enum": [
+          "userDocument"
+        ]
+      },
+      "RequestAssetUploadDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "default": "image",
+            "example": "image",
+            "$ref": "#/components/schemas/AssetTypeEnum"
+          },
+          "target": {
+            "example": "userDocument",
+            "$ref": "#/components/schemas/AssetTargetEnum"
+          }
+        },
+        "required": [
+          "type",
+          "target"
+        ]
+      },
+      "CloudinaryProviderUploadParamsDto": {
+        "type": "object",
+        "properties": {
+          "apiKey": {
+            "type": "string",
+            "example": "000000000000"
+          },
+          "timestamp": {
+            "type": "number",
+            "example": 1666215568
+          },
+          "publicId": {
+            "type": "string",
+            "example": "directory/3fa85f64-5717-4562-b3fc-2c963f66afa6"
+          },
+          "signature": {
+            "type": "string",
+            "example": "bfd09f95f331f558cbd1320e67aa8d488770583e"
+          },
+          "signedParams": {
+            "type": "string",
+            "example": "filename_override=false&public_id=directory/3fa85f64-5717-4562-b3fc-2c963f66afa6&timestamp=1666215568&unique_filename=true&upload_preset=upload_preset&api_key=000000000000&signature=bfd09f95f331f558cbd1320e67aa8d488770583e"
+          },
+          "queryParams": {
+            "type": "object",
+            "example": {
+              "filename_override": "false",
+              "public_id": "directory/3fa85f64-5717-4562-b3fc-2c963f66afa6",
+              "timestamp": "1666215568",
+              "unique_filename": "true"
+            }
+          },
+          "uploadPreset": {
+            "type": "string",
+            "example": "upload_preset"
+          }
+        },
+        "required": [
+          "apiKey",
+          "timestamp",
+          "publicId",
+          "signature",
+          "signedParams",
+          "queryParams",
+          "uploadPreset"
+        ]
+      },
+      "AssetType": {
+        "type": "string",
+        "enum": [
+          "image",
+          "document"
+        ]
+      },
+      "AssetStatus": {
+        "type": "string",
+        "enum": [
+          "waitingUpload",
+          "waitingAssociation",
+          "associated",
+          "excluded",
+          "expired"
+        ]
+      },
+      "AssetProvider": {
+        "type": "string",
+        "enum": [
+          "cloudinary"
+        ]
+      },
+      "AssetTarget": {
+        "type": "string",
+        "enum": [
+          "userDocument"
+        ]
+      },
+      "AssetEntityWithProviderUploadParamsDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "tenantId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "example": "image",
+            "$ref": "#/components/schemas/AssetType"
+          },
+          "status": {
+            "example": "associated",
+            "$ref": "#/components/schemas/AssetStatus"
+          },
+          "provider": {
+            "example": "cloudinary",
+            "$ref": "#/components/schemas/AssetProvider"
+          },
+          "directLink": {
+            "type": "string",
+            "example": "https://dummyimage.com/200x200/fff/000",
+            "nullable": true
+          },
+          "target": {
+            "example": "userDocument",
+            "nullable": true,
+            "$ref": "#/components/schemas/AssetTarget"
+          },
+          "providerUploadParams": {
+            "$ref": "#/components/schemas/CloudinaryProviderUploadParamsDto"
+          }
+        },
+        "required": [
+          "id",
+          "createdAt",
+          "updatedAt",
+          "tenantId",
+          "type",
+          "status",
+          "provider",
+          "providerUploadParams"
+        ]
+      },
       "StatusUsersStatuses": {
         "type": "string",
         "enum": [
@@ -1953,261 +2473,6 @@
         },
         "required": [
           "status"
-        ]
-      },
-      "I18nLocaleEnum": {
-        "type": "string",
-        "enum": [
-          "pt-br",
-          "en"
-        ]
-      },
-      "UserDataDto": {
-        "type": "object",
-        "properties": {
-          "tenantParamsId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "value": {
-            "type": "string"
-          },
-          "signature": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "tenantParamsId",
-          "value"
-        ]
-      },
-      "CreateUserInfosDto": {
-        "type": "object",
-        "properties": {
-          "tenantId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "password": {
-            "type": "string",
-            "example": "P@ssw0rd",
-            "description": "Password should include lowercase, uppercase and digits"
-          },
-          "email": {
-            "type": "string",
-            "example": "email@example.com"
-          },
-          "name": {
-            "type": "string"
-          },
-          "i18nLocale": {
-            "example": "pt-br",
-            "$ref": "#/components/schemas/I18nLocaleEnum"
-          },
-          "callbackUrl": {
-            "type": "string"
-          },
-          "sendEmail": {
-            "type": "boolean",
-            "default": false
-          },
-          "documents": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/UserDataDto"
-            }
-          }
-        },
-        "required": [
-          "tenantId",
-          "email",
-          "name"
-        ]
-      },
-      "CustomerInfoStatusEnum": {
-        "type": "string",
-        "enum": [
-          "approved",
-          "denied",
-          "waitingInfo",
-          "missingDocuments",
-          "processing",
-          "created"
-        ]
-      },
-      "CustomerInfosDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "createdAt": {
-            "format": "date-time",
-            "type": "string"
-          },
-          "updatedAt": {
-            "format": "date-time",
-            "type": "string"
-          },
-          "tenantId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "userId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          },
-          "email": {
-            "type": "string"
-          },
-          "status": {
-            "example": "created",
-            "$ref": "#/components/schemas/CustomerInfoStatusEnum"
-          }
-        },
-        "required": [
-          "id",
-          "createdAt",
-          "updatedAt",
-          "tenantId",
-          "userId",
-          "name",
-          "email",
-          "status"
-        ]
-      },
-      "OrderByEnum": {
-        "type": "string",
-        "enum": [
-          "ASC",
-          "DESC"
-        ]
-      },
-      "PaginationMetaDto": {
-        "type": "object",
-        "properties": {
-          "itemCount": {
-            "type": "number",
-            "example": 1
-          },
-          "totalItems": {
-            "type": "number",
-            "example": 1
-          },
-          "itemsPerPage": {
-            "type": "number",
-            "example": 1
-          },
-          "totalPages": {
-            "type": "number",
-            "example": 1
-          },
-          "currentPage": {
-            "type": "number",
-            "example": 1
-          }
-        },
-        "required": [
-          "itemCount",
-          "itemsPerPage",
-          "currentPage"
-        ]
-      },
-      "PaginationLinksDto": {
-        "type": "object",
-        "properties": {
-          "first": {
-            "type": "string",
-            "example": "http://example.com?page=1"
-          },
-          "prev": {
-            "type": "string",
-            "example": "http://example.com?page=1"
-          },
-          "next": {
-            "type": "string",
-            "example": "http://example.com?page=2"
-          },
-          "last": {
-            "type": "string",
-            "example": "http://example.com?page=3"
-          }
-        }
-      },
-      "CustomerInfosPaginated": {
-        "type": "object",
-        "properties": {
-          "items": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/CustomerInfosDto"
-            }
-          },
-          "meta": {
-            "$ref": "#/components/schemas/PaginationMetaDto"
-          },
-          "links": {
-            "$ref": "#/components/schemas/PaginationLinksDto"
-          }
-        },
-        "required": [
-          "items",
-          "meta"
-        ]
-      },
-      "ChangeUsersInfosStatusDto": {
-        "type": "object",
-        "properties": {
-          "status": {
-            "example": "created",
-            "$ref": "#/components/schemas/CustomerInfoStatusEnum"
-          }
-        },
-        "required": [
-          "status"
-        ]
-      },
-      "TenantContextsDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "createdAt": {
-            "format": "date-time",
-            "type": "string"
-          },
-          "updatedAt": {
-            "format": "date-time",
-            "type": "string"
-          },
-          "tenantId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "contextId": {
-            "type": "string"
-          },
-          "context": {
-            "nullable": true,
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/ContextDto"
-              }
-            ]
-          }
-        },
-        "required": [
-          "id",
-          "createdAt",
-          "updatedAt",
-          "tenantId",
-          "contextId"
         ]
       }
     }
